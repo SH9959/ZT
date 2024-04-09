@@ -418,9 +418,9 @@ def get_mic_from_audio(savepath):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-    subprocess.run(['ffmpeg','-i',savepath,'-af','pan=6c|c0=2*c0|c1=0.1*c1|c2=0.1*c2|c3=0.1*c3|c4=0.1*c4|c5=0.1*c5', '-y', savepath])
+    # subprocess.run(['ffmpeg','-i',savepath,'-af','pan=6c|c0=2*c0|c1=0.1*c1|c2=0.1*c2|c3=0.1*c3|c4=0.1*c4|c5=0.1*c5', '-y', savepath])
 
-    subprocess.run(['ffmpeg','-i',savepath,'-ac','1', '-y', savepath])
+    # subprocess.run(['ffmpeg','-i',savepath,'-ac','1', '-y', savepath])
 
     micover = True
 

@@ -67,11 +67,15 @@ def text2speech(text='', index=0):
 
 def listenuser(text='ding', iter=1):
     # 可选的录音保存路径：
-    # - DJI_sitting_at_desk - 坐在办公桌前，手持小蜜蜂
-    # - DJI_stand_next_robot - 站在机器人旁边（1-2米），手持小蜜蜂
-    # - DJI_very_close_robot - 小蜜蜂放在距离机器人风扇非常近的地方，比如放在机器人肩膀上
-    # - fan_noisePeople quiet default
-    userword = iat_web_api(text, iter=iter, environment_name='fan_noisePeople')
+    # % DJI_sitting_at_desk         % 坐在办公桌前，手持小蜜蜂
+    # % DJI_stand_next_robot        % 站在机器人旁边（1-2米），手持小蜜蜂
+    # % DJI_very_close_robot        % 小蜜蜂放在距离机器人风扇非常近的地方，比如放在机器人肩膀上
+    # % HEAD_stand_next_robot       % 站在机器人旁边（1-2米），使用头部麦克风
+    # % HEAD_very_close_robot       % 说话时非常贴近头部麦克风
+    # 特殊情况添加以下后缀：
+    # % _noisePeople                % 环境中有很多人声，非常吵
+    # % _quiet                      % 周围基本没什么人说话，很安静
+    userword = iat_web_api(text, iter=iter, environment_name='DJI_sitting_at_desk')
 
     return userword
 
