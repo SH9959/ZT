@@ -536,11 +536,13 @@ class ExplainClass(InterruptClass):
                 # 处理打断
                 interrupt_flag = self.listen_for_INT() # 监听打断信号
                 if interrupt_flag:  # 打断后做出的处理
+                    STATUS.Arm_Action_Publisher.publish(9001) # 终止手臂动作
                     if_continue = self.handle_interrupt()  # 调用父类InterruptClass中的方法处理打断
                     if not if_continue: # 不是继续就直接结束讲解
                         STATUS.set_is_Explaining(False)
                         return False
                     else: # 是继续就从上一句没说完的话开始讲
+                        STATUS.Arm_Action_Publisher.publish(9000) # 开启手臂动作
                         self.index_of_sentence -= 1
                         break
                 
@@ -578,7 +580,10 @@ class MainClass:
             self.yolo_sub = rospy.Subscriber("yolo_chatter", String, self.yolo_callback)  # 订阅yolo话题，停障
 
         if STATUS.POSE_DETECT:
-            self.pose_sub = rospy.Subscriber("pose_chatter", String, self.pose_callback)
+            self.pose_sub = rospy.Subscriber("pose_chatter", String, self.pose_callback) # 订阅pose话题，手势识别
+
+        if STATUS.ARM_ACTION:
+            STATUS.set_Arm_Action_Publisher(rospy.Publisher("arm_chatter", String, queue_size=1)) # 发布arm话题，手臂动作
         
         STATUS.set_Stop_Publisher(rospy.Publisher("stopper_msg", actionStopper, queue_size=1))
 
@@ -590,6 +595,7 @@ class MainClass:
         STATUS.set_TAKE_ACTION(False)
         STATUS.set_FACE_DETECT(True)
         STATUS.set_OBSTAC_STOP(True)
+        STATUS.set_ARM_ACTION(True)
 
         # 选择大语言模型
         STATUS.set_MODEL_TASK_TYPE('chatglm') # chatglm gpt-4 gpt-3.5-turbo
@@ -703,7 +709,9 @@ class MainClass:
 
                     print(f"\n执行位于 {next_destination} 号目标点的讲解")
 
+                    STATUS.Arm_Action_Publisher.publish(9000) # 开启手臂动作
                     if_success_explain = self.explain_class.split_and_speech_text(next_destination) # 启动讲解
+                    STATUS.Arm_Action_Publisher.publish(9001) # 终止手臂动作
 
                     print("\nif_success_explain: ", if_success_explain)
                     if if_success_explain: # 如果讲解成功，执行问答

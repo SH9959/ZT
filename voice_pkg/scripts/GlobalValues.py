@@ -9,6 +9,7 @@ import inspect
 import yaml, os
 from copy import deepcopy
 
+from std_msgs.msg import String
 from main.msg import actionStopper
 
 class GlobalValuesClass:
@@ -33,6 +34,7 @@ class GlobalValuesClass:
             FACE_DETECT:bool=False,                         # 是否开启人脸检测功能
             OBSTAC_STOP:bool=False,                         # 是否开启停障功能
             POSE_DETECT:bool=False,                         # 是否开启姿势检测功能
+            ARM_ACTION:bool=False,                          # 是否开启手部动作功能
             POSE_DETECT_KEYWORD:str='',                     # 姿势检测到的物品关键词
 
             MODEL_TASK_TYPE:str = "",                       # 用于做任务分类的模型
@@ -70,6 +72,7 @@ class GlobalValuesClass:
             Interrupt_Position:Optional[List[float]]=None,  # 移动被打断时 记录当时所处的精确坐标
 
             Stop_Publisher:Optional[actionStopper]=None,    # 停止发布者
+            Arm_Action_Publisher:Optional[String]=None,     # 手臂动作发布者
             
             Origin_Order_of_Visit:List[str]=[               # robot默认原始参观顺序列表
                 "火箭展厅", 
@@ -97,6 +100,7 @@ class GlobalValuesClass:
         self.FACE_DETECT = FACE_DETECT
         self.OBSTAC_STOP = OBSTAC_STOP
         self.POSE_DETECT = POSE_DETECT
+        self.ARM_ACTION = ARM_ACTION
         self.POSE_DETECT_KEYWORD = POSE_DETECT_KEYWORD
 
         self.MODEL_TASK_TYPE = MODEL_TASK_TYPE
@@ -135,6 +139,7 @@ class GlobalValuesClass:
         self.Last_Play_Processor = Last_Play_Processor
 
         self.Stop_Publisher = Stop_Publisher
+        self.Arm_Action_Publisher = Arm_Action_Publisher
 
         if self.Current_Area:
             self.Last_Area = self.Current_Area                 # 记录上一次呆过的地方
@@ -169,6 +174,9 @@ class GlobalValuesClass:
 
     def set_POSE_DETECT(self, new_POSE_DETECT:bool=False) -> None:
         self.POSE_DETECT = new_POSE_DETECT
+
+    def set_ARM_ACTION(self, new_ARM_ACTION:bool=False) -> None:
+        self.ARM_ACTION = new_ARM_ACTION
     
     def set_POSE_DETECT_KEYWORD(self, new_POSE_DETECT_KEYWORD:str="") -> None:
         self.POSE_DETECT_KEYWORD = new_POSE_DETECT_KEYWORD
@@ -289,6 +297,9 @@ class GlobalValuesClass:
 
     def set_Stop_Publisher(self, new_Stop_Publisher):
         self.Stop_Publisher = new_Stop_Publisher
+
+    def set_Arm_Action_Publisher(self, new_Arm_Action_Publisher):
+        self.Arm_Action_Publisher = new_Arm_Action_Publisher
         
     def update_all_attributes(self, new_attributes: dict) -> None:
         """

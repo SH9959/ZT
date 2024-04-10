@@ -1,0 +1,74 @@
+[
+    {
+        "id":1,
+        "action_name":"招手", 
+        "action_time":18,
+        "action_description":["左右摆手", "左手伸手指引"],
+        "action_scene_hsong":"招手动作：当游客向机器人说你好或者机器人看到游客和其交互时，可以做招手动作，表示欢迎。",
+        "corresponding_speech_leju":"欢迎来参观此展厅；此展览是由深圳市人工智能与机器人研究院AIR主办，出品为科学+艺术联合实验室。"
+    },
+    {
+        "id":2,
+        "action_name":"介绍自己", 
+        "action_time":24,
+        "action_description":["右手大拇指指自己", "右手向右上摊开", "保持右手姿势，左手抬起到中间，然后左手摊开"],
+        "action_scene_hsong":"介绍动作：当机器人需要介绍某一个模块时，进行讲解动作",
+        "corresponding_speech_leju":"本次展览主题是问题演绎，AI需要我们学会更好地提出问题，同时也给我们抛出很多问题。旁边这面电视墙由16台老式电视机组成，它们呈现了研究院历史与当下的科研试验进程的真是映像。"
+    },
+    {
+        "id":3,
+        "action_name":"介绍正右方", 
+        "action_time":19,
+        "action_description":["右手伸掌居中", "左手也抬起，居中", "右手再向上摊开", "之后左手也摊开", "保持两手摊开情况下，反复松手握拳"],
+        "action_scene_hsong":"介绍动作：当需要介绍右边的展品时，先指向右边，再摊开双手进行讲解",
+        "corresponding_speech_leju":"现在看到的作品是意识场域，这件作品我们可以看到它们之间呈现出的虚与实、物质与意识之间的张力。"
+    },
+    {
+        "id":4,
+        "action_name":"介绍右方", 
+        "action_time":9,
+        "action_description":["右下指靠前的位置", "右下指靠后的位置"],
+        "action_scene_hsong":"介绍动作：当需要介绍右下方的展品时，手会指向右下方，进行讲解",
+        "corresponding_speech_leju":"现在看到的作品是意识场域，这件作品我们可以看到它们之间呈现出的虚与实、物质与意识之间的张力。"
+    },
+    {
+        "id":5,
+        "action_name":"介绍较近的前方", 
+        "action_time":19,
+        "action_description":["双手右手两指指下", "手腕转动，手掌向上摊开", "两手居中，手掌垂直地面，然后摊开"],
+        "action_scene_hsong":"介绍动作：当机器人需要介绍前方较近处中间的展品时，需要进行讲解动作",
+        "corresponding_speech_leju":"中间是一台被倒置放过来的被废弃的试验品桥梁机器人。投影上反复出现的像是记忆或幻想。"
+    },   
+    {
+        "id":6,
+        "action_name":"介绍较远的前方", 
+        "action_time":15,
+        "action_description":["右手左右摆手", "两手合中，然后摊开"],
+        "action_scene_hsong":"介绍动作：当机器人需要介绍前方较远处或较长的展品时，需要进行讲解动作",
+        "corresponding_speech_leju":"这一板块主题为身体城市，在上面不断游、穿梭的微纳米机器人如同城市中检测维修的机器人，实物中通用人形机器人像画面中的想象走进现实。"
+    },   
+    {
+        "id":7,
+        "action_name":"回忆 刚刚我们", 
+        "action_time":25,
+        "action_description":["右手食指向上", "右手食指向上"],
+        "action_scene_hsong":"向上指：属于回忆类型的动作，机器人在说到‘刚刚’的时候，需要进行的讲解动作",
+        "corresponding_speech_leju":"刚刚走过去的是游走的展台，当我们在展厅里找作品观看时，这个展台同时也在找谁是我的观看者。"
+    },   
+    {
+        "id":8,
+        "action_name":"复杂的讲解动作", 
+        "action_time":32,
+        "action_description":["右手居中", "右手握拳在上，左手做掌在下，上下锤手", "右手食指向上，然后左右摆手", "左右手靠中后摊开"],
+        "action_scene_hsong":"当需要进行长文本讲解时，需要进行的讲解动作",
+        "corresponding_speech_leju":"这是艺术家许锦龙的作品，意义的意义。这排不断敲击弹簧钉的机械锤，看似毫无意义实则有着深刻的隐喻，它们有如被设定了无休止敲打的程序，无法自拔；像是人类对意义的追逐。"
+    },   
+    {
+        "id":9,
+        "action_name":"结束POSE", 
+        "action_time":15,
+        "action_description":["右手居中", "摆POSE"],
+        "action_scene_hsong":"当讲解结束时，机器人可以摆POSE，也可以用于合影。",
+        "corresponding_speech_leju":"今天的讲解到此结束，请大家随我来合影区合影留念"
+    }
+]
