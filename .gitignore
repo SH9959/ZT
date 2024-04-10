@@ -1,0 +1,8 @@
+*.zip
+*.bin
+*.pth
+# .gitignore
+.pb
+__pycache__/
+config.json
+checkpoints/

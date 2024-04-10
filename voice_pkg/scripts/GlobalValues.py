@@ -33,6 +33,10 @@ class GlobalValuesClass:
             FACE_DETECT:bool=False,                         # 是否开启人脸检测功能
             OBSTAC_STOP:bool=False,                         # 是否开启停障功能
             POSE_DETECT:bool=False,                         # 是否开启姿势检测功能
+
+            MODEL_TASK_TYPE:str = "",                       # 用于做任务分类的模型
+            MODEL_LLM_ANSWER:str = "",                      # 用于回答问题的模型
+            MODEL_BAN_OPENAI:str = "",                      # 是否禁用OpenAI
             
             info: Optional[str] = None,                     # 当前实例的描述信息，随意
             name:str="This is a glabolvalues",              # 当前实例的描述信息，随意
@@ -87,6 +91,10 @@ class GlobalValuesClass:
         self.FACE_DETECT = FACE_DETECT
         self.OBSTAC_STOP = OBSTAC_STOP
         self.POSE_DETECT = POSE_DETECT
+
+        self.MODEL_TASK_TYPE = MODEL_TASK_TYPE
+        self.MODEL_LLM_ANSWER = MODEL_LLM_ANSWER
+        self.MODEL_BAN_OPENAI = MODEL_BAN_OPENAI
         
         if info is None:
             info = f"Hello! Description here." 
