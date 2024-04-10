@@ -38,7 +38,7 @@ from wsgiref.handlers import format_date_time
 from datetime import datetime
 from time import mktime
 import _thread as thread
-import speech_recognition as sr 
+# import speech_recognition as sr 
 # pip install SpeechRecognition
 
 from tencentcloud.common import credential
@@ -430,56 +430,56 @@ def get_mic_from_audio(savepath):
     kedaxunfei_iat_service(savepath)
 
 
-def mic_iat(savepath):
-    # 打开麦克风录音
-    r = sr.Recognizer()
-    global flagover
-    global micover
-    r.pause_threshold = 0.8   # minimum length of silence (in seconds) that will register as the end of a phrase.  
-    r.energy_threshold = 4000
-    # with sr.Microphone() as source1:
-    #     # calibrate ambient noise
-    #     r.adjust_for_ambient_noise(source1, duration=0.8)
-    # print(r.energy_threshold)
-    # time1 = datetime.now()
-    try:
-        with sr.Microphone() as source:
-            # run iam here
-            # input()
-            while flagover == False: continue
-            time1 = datetime.now()
-            # r.listen start recording when there is audio input higher than threshold (set this to a reasonable number),
-            # and stops recording when silence >0.8s(changable)
-            print("I am listening....", datetime.now())
-            audio = r.listen(source, timeout=2, phrase_time_limit=15)
-            # audio = r.listen(source, timeout=2, phrase_time_limit=2)
-            print("I finish listening....", datetime.now())
+# def mic_iat(savepath):
+#     # 打开麦克风录音
+#     r = sr.Recognizer()
+#     global flagover
+#     global micover
+#     r.pause_threshold = 0.8   # minimum length of silence (in seconds) that will register as the end of a phrase.  
+#     r.energy_threshold = 4000
+#     # with sr.Microphone() as source1:
+#     #     # calibrate ambient noise
+#     #     r.adjust_for_ambient_noise(source1, duration=0.8)
+#     # print(r.energy_threshold)
+#     # time1 = datetime.now()
+#     try:
+#         with sr.Microphone() as source:
+#             # run iam here
+#             # input()
+#             while flagover == False: continue
+#             time1 = datetime.now()
+#             # r.listen start recording when there is audio input higher than threshold (set this to a reasonable number),
+#             # and stops recording when silence >0.8s(changable)
+#             print("I am listening....", datetime.now())
+#             audio = r.listen(source, timeout=2, phrase_time_limit=15)
+#             # audio = r.listen(source, timeout=2, phrase_time_limit=2)
+#             print("I finish listening....", datetime.now())
             
-            time1 = datetime.now()
-            # get wav data from AudioData object 
-            wav = audio.get_wav_data(convert_rate=16000, convert_width=2) # width=2 gives 16bit audio.
+#             time1 = datetime.now()
+#             # get wav data from AudioData object 
+#             wav = audio.get_wav_data(convert_rate=16000, convert_width=2) # width=2 gives 16bit audio.
             
-            # # 保存 wav
-            # write audio to a RAW file
-            # with open(wsParam.AudioFile, "wb") as f:
-            #     f.write(audio.get_raw_data())
+#             # # 保存 wav
+#             # write audio to a RAW file
+#             # with open(wsParam.AudioFile, "wb") as f:
+#             #     f.write(audio.get_raw_data())
 
             
-            print('----+-', savepath)
-            wf = wave.open(savepath, 'wb')
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(16000)
-            wf.writeframes(wav)
-            wf.close()
-            print('sr is over', datetime.now() - time1)
-            micover = True
-    except sr.exceptions.WaitTimeoutError as e:
-        print('wmjjjjj', e)
-        micover = True
-        return
+#             print('----+-', savepath)
+#             wf = wave.open(savepath, 'wb')
+#             wf.setnchannels(1)
+#             wf.setsampwidth(2)
+#             wf.setframerate(16000)
+#             wf.writeframes(wav)
+#             wf.close()
+#             print('sr is over', datetime.now() - time1)
+#             micover = True
+#     except sr.exceptions.WaitTimeoutError as e:
+#         print('wmjjjjj', e)
+#         micover = True
+#         return
     
-    kedaxunfei_iat_service(savepath)
+#     kedaxunfei_iat_service(savepath)
   
 def iat_web_api(input, iter=1, environment_name='default'):
     # 测试时候在此处正确填写相关信息即可运行

@@ -33,12 +33,16 @@ class GlobalValuesClass:
             FACE_DETECT:bool=False,                         # 是否开启人脸检测功能
             OBSTAC_STOP:bool=False,                         # 是否开启停障功能
             POSE_DETECT:bool=False,                         # 是否开启姿势检测功能
+            POSE_DETECT_KEYWORD:str='',                     # 姿势检测到的物品关键词
 
             MODEL_TASK_TYPE:str = "",                       # 用于做任务分类的模型
             MODEL_LLM_ANSWER:str = "",                      # 用于回答问题的模型
             MODEL_BAN_OPENAI:bool=False,                    # 是否禁用OpenAI
 
             LOW_COMPUTER_EXIST:bool=False,                  # 下位机是否存在
+
+            DURATION:int=2,                                 # 无人说话时每轮录音的时间
+            THRESHOLD_AUDIO=8,                              # 超过该音量阈值识别到有人讲话
             
             info: Optional[str] = None,                     # 当前实例的描述信息，随意
             name:str="This is a glabolvalues",              # 当前实例的描述信息，随意
@@ -93,12 +97,16 @@ class GlobalValuesClass:
         self.FACE_DETECT = FACE_DETECT
         self.OBSTAC_STOP = OBSTAC_STOP
         self.POSE_DETECT = POSE_DETECT
+        self.POSE_DETECT_KEYWORD = POSE_DETECT_KEYWORD
 
         self.MODEL_TASK_TYPE = MODEL_TASK_TYPE
         self.MODEL_LLM_ANSWER = MODEL_LLM_ANSWER
         self.MODEL_BAN_OPENAI = MODEL_BAN_OPENAI
 
         self.LOW_COMPUTER_EXIST = LOW_COMPUTER_EXIST
+
+        self.DURATION = DURATION
+        self.THRESHOLD_AUDIO = THRESHOLD_AUDIO
         
         if info is None:
             info = f"Hello! Description here." 
@@ -161,11 +169,14 @@ class GlobalValuesClass:
 
     def set_POSE_DETECT(self, new_POSE_DETECT:bool=False) -> None:
         self.POSE_DETECT = new_POSE_DETECT
+    
+    def set_POSE_DETECT_KEYWORD(self, new_POSE_DETECT_KEYWORD:str="") -> None:
+        self.POSE_DETECT_KEYWORD = new_POSE_DETECT_KEYWORD
 
-    def set_MODEL_TASK_TYPE(self, new_MODEL_TASK_TYPE:str="None") -> None:
+    def set_MODEL_TASK_TYPE(self, new_MODEL_TASK_TYPE:str="") -> None:
         self.MODEL_TASK_TYPE = new_MODEL_TASK_TYPE
 
-    def set_MODEL_LLM_ANSWER(self, new_MODEL_LLM_ANSWER:str="None") -> None:
+    def set_MODEL_LLM_ANSWER(self, new_MODEL_LLM_ANSWER:str="") -> None:
         self.MODEL_LLM_ANSWER = new_MODEL_LLM_ANSWER
     
     def set_MODEL_BAN_OPENAI(self, new_MODEL_BAN_OPENAI:bool=False) -> None:
@@ -173,6 +184,12 @@ class GlobalValuesClass:
 
     def set_LOW_COMPUTER_EXIST(self, new_LOW_COMPUTER_EXIST:bool=False) -> None:
         self.LOW_COMPUTER_EXIST = new_LOW_COMPUTER_EXIST
+
+    def set_DURATION(self, new_DURATION:int=2) -> None:
+        self.DURATION = new_DURATION
+
+    def set_THRESHOLD_AUDIO(self, new_set_THRESHOLD_AUDIO:int=2) -> None:
+        self.set_THRESHOLD_AUDIO = new_set_THRESHOLD_AUDIO
 
     def set_is_Navigating(self, new_is_Navigating:bool=False) -> None:
         self.is_Navigating = new_is_Navigating

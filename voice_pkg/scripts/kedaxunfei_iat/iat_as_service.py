@@ -38,7 +38,7 @@ from wsgiref.handlers import format_date_time
 from datetime import datetime
 from time import mktime
 import _thread as thread
-import speech_recognition as sr 
+# import speech_recognition as sr 
 # pip install SpeechRecognition
 
 from pydub.playback import play

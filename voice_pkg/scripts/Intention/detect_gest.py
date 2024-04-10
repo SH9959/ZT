@@ -9,7 +9,7 @@ from collections import deque
 import mediapipe as mp
 
 import rospy
-from geometry_msgs.msg import Vector3
+from std_msgs.msg import String
 from rs2cap_ros import RealSenseCaptureRos
 
 from visualize import draw_gest_landmarks_on_image
@@ -22,7 +22,7 @@ from visualize import visualize_finger_direction
 class HandGestureDetector:
     def __init__(self, image_visulize=False, finger_direction_visulize=False):
         # rospy.init_node('pose_detector', anonymous=True)
-        self.pose_pub = rospy.Publisher('pose_chatter', Vector3, queue_size=1)
+        self.pose_pub = rospy.Publisher('pose_chatter', String, queue_size=1)
 
         self.image_queue = queue.Queue() # 用于存储图像队列
         self.finger_direction_queue = queue.Queue() # 用于存储手指方向队列
@@ -135,9 +135,11 @@ class HandGestureDetector:
                 return False
         self.last_stable_vector = self.cache[-1]
         closest_object = self.vector_to_objects() # 获取最近的物体
-        self.pose_pub.publish(Vector3(self.last_stable_vector['x'], 
-                                      self.last_stable_vector['y'], 
-                                      self.last_stable_vector['z']))
+
+        # 发布最近的物体
+        closest_object_data = String()
+        closest_object_data.data = closest_object
+        self.pose_pub.publish(closest_object_data)
         return True
     
     @staticmethod
@@ -161,33 +163,44 @@ class HandGestureDetector:
     def vector_to_objects(self):
         direction = self.last_stable_vector
         if direction:
-            direction = [direction['x'], direction['z'], -direction['y']] # 将向量坐标轴转换为标准坐标轴
+            # 调整方向向量以匹配标准坐标轴
+            direction = [direction['x'], direction['z'], -direction['y']]
+            direction = np.array(direction)
 
-            start_point = [0, 1.5, 1] # 正对机器人，面前1.5米，高度1米
+            # 用户手部大致位置: 正对机器人，面前1.5米，高度1米
+            start_point = np.array([0, 1.5, 1])
 
-            closest_object = None # 初始化最接近的物体
-            smallest_angle = np.pi  # 初始化最小角度
-            
-            robot_pos = [self.config['robot_position']['x'], self.config['robot_position']['y'], self.config['robot_position']['z']] # 机器人位置
+            # 初始化最接近的物体及其角度
+            closest_objects = [(None, np.pi), (None, np.pi)]  # 存储两个最小角度及其对应物体
+
+            robot_pos = np.array([self.config['robot_position']['x'], self.config['robot_position']['y'], self.config['robot_position']['z']])  # 机器人位置
             for exhibit in self.config['exhibits']:
                 object_pos = np.array([exhibit['position']['x'], exhibit['position']['y'], exhibit['position']['z']])
 
-                # TODO: 将object_pos转换为相对于robot_pos的相对位置
+                relative_object_pos = object_pos - robot_pos
 
-                object_vector = object_pos - np.array(start_point)
+                object_vector = relative_object_pos - start_point
                 object_vector_normalized = object_vector / np.linalg.norm(object_vector)
-                
+
                 angle = np.arccos(np.clip(np.dot(direction, object_vector_normalized), -1.0, 1.0))
-                
-                if angle < smallest_angle:
-                    smallest_angle = angle
-                    closest_object = exhibit
-                    
-            print("\nclosest_object:", closest_object['name'])
-            if smallest_angle < 20:
-                return closest_object
+
+                if angle < closest_objects[1][1]:  # 如果当前物体的角度小于第二小的角度
+                    if angle < closest_objects[0][1]:  # 如果当前物体的角度也小于最小的角度
+                        closest_objects[1] = closest_objects[0]  # 更新第二小的物体为之前的最小物体
+                        closest_objects[0] = (exhibit, angle)  # 更新最小的物体为当前物体
+                    else:
+                        closest_objects[1] = (exhibit, angle)  # 只更新第二小的物体为当前物体
+
+            # 检查最接近的物体和用户指向之间的夹角是否不超过20度
+            angle_threshold = np.radians(20)
+            if closest_objects[0][1] < angle_threshold:
+                print("\nclosest_object:", closest_objects[0][0]['name'])
+                return closest_objects[0][0]  # 只返回最接近的物体
             else:
-                return None
+                # 返回最近的两个物品的名字拼接
+                objects_names = " ".join([obj[0]['name'] for obj in closest_objects if obj[0] is not None])
+                print("\nclosest_objects:", objects_names)
+                return objects_names
         else:
             return None
 
@@ -222,7 +235,7 @@ class HandGestureDetector:
                     elbow, vector = self.finger_direction_queue.get()
                     visualize_finger_direction(elbow, vector)
 
-                sleep(1/30) # 增加显式延迟，避免绘图累计误差
+                sleep(1/10) # 增加显式延迟，避免绘图累计误差
 
                 if rospy.is_shutdown():
                     exit()
