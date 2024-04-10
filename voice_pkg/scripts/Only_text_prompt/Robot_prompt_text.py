@@ -12,12 +12,12 @@ parser.add_argument("--prompt", type=str, default="/home/kuavo/catkin_dt/src/voi
 parser.add_argument("--sysprompt", type=str, default="/home/kuavo/catkin_dt/src/voice_pkg/scripts/Only_text_prompt/sys_prompt.txt")
 args = parser.parse_args()
 
-with open("config.json", "r") as f:
+with open("/home/kuavo/catkin_dt/config_dt.json", "r") as f:
     config = json.load(f)
 
 
 print("正在初始化ChatGPT……")
-openai.api_key = config["OPENAI_API_KEY"]
+openai.api_key = config["OPENAI_API_KEY_lhkong"]
 openai.api_base = "https://api.xty.app/v1"  # 加速路径
 
 with open(args.sysprompt, "r", encoding='utf-8') as f:
