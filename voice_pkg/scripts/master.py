@@ -18,6 +18,7 @@ from std_msgs.msg import String, Bool
 
 from interrupt import get_task_type
 from interrupt import get_llm_answer
+from qa_legacy.qa import answer_query # OpenAI key 401 error
 from GlobalValues import GlobalValuesClass
 # from Only_text_prompt.Robot_prompt_text import ask  #lhkong动作分类
 
@@ -114,7 +115,7 @@ class InterruptClass:
 
         # TODO: 机器人如何转向面朝用户？用户人脸居中才停下来，如果有多个人脸就匹配最大的
 
-        if STATUS.FACE_DETECT:
+        if STATUS.FACE_DETECT and False:
             print("STATUS.is_Big_Face_Detected: ", STATUS.is_Big_Face_Detected)
             while not STATUS.is_Big_Face_Detected: # 视野中没有人脸
                 # TODO: 向下位机发送转向命令
@@ -151,7 +152,7 @@ class InterruptClass:
                 thread.start_new_thread(self.ask_for_action, (question,))
             
             print(f"\n大模型进行任务分类: ", end='')
-            task = get_task_type(question) # 任务分类
+            task = get_task_type(question, model='chatglm') # 任务分类
             print(task)
 
             STATUS.Block_Navigation_Thread = False # 在消除打断flag之后延迟一些消除阻止导航进程的flag，保证导航进程被阻止
@@ -171,7 +172,7 @@ class InterruptClass:
                     self.ask_for_action.start() # 启动线程
 
                 print(f"\n大模型进行任务分类: ", end='')
-                task = get_task_type(question) # 任务分类
+                task = get_task_type(question, model='chatglm') # 任务分类
                 print(task)
                 
                 if STATUS.TAKE_ACTION:
@@ -189,7 +190,11 @@ class InterruptClass:
                 self.index_of_sentence = 0 # 重置句子索引
 
             if 'visit' in task:
-                target_point = task.split(" ")[1] # 从字符串中提取目标点（如'卫星展厅'、'下一个'）
+                # 从字符串中提取目标点（如'卫星展厅'、'下一个'）
+                keywords = STATUS.Origin_Order_of_Visit + ['上一个', '下一个']
+
+                # Check if the string contains any of the elements in the list
+                target_point = next((element for element in keywords if element in task), None)
 
                 # TODO: 思考不同任务过程中的新导航指令是否需要不同的处理（可能与更改目标点列表策略有关）
 
@@ -236,6 +241,7 @@ class InterruptClass:
                 pass
             
             elif 'continue' in task:
+                STATUS.set_is_QAing(False) # 防止问答被打断 - 结束
                 return 'continue'
 
             else:
@@ -264,23 +270,29 @@ class InterruptClass:
 
 class QAClass():
     def __init__(self):
-        self.qaclass_thread = threading.Thread(target=self.QAClassInit) # 初始化问答模型的线程
-        self.qaclass_thread.start() # 启动问答模型的初始化
+        pass
+
+    #     self.qaclass_thread = threading.Thread(target=self.QAClassInit) # 初始化问答模型的线程
+    #     self.qaclass_thread.start() # 启动问答模型的初始化
     
-    def QAClassInit(self):
-        QaClass = get_llm_answer(model='gpt-4')
-        self.qaclass = QaClass()
+    # def QAClassInit(self):
+    #     QaClass = get_llm_answer(model='huozi')
+    #     self.qaclass = QaClass()
     
     def answer_question(self, user_words:str) -> str:
         STATUS.set_is_QAing(True)
 
         text2speech("请稍等，让我思索一下。", index=0)
         
-        # 文档检索问答模型初始化完成
-        self.qaclass_thread.join()
+        # # 文档检索问答模型初始化完成
+        # self.qaclass_thread.join()
 
-        qa_answer = self.qaclass.process_query(user_words) # 问答模型处理用户问题
+        # qa_answer = self.qaclass.process_query(user_words) # 问答模型处理用户问题
+
+        qa_answer = answer_query(user_words)
+
         text2speech(qa_answer, index=1000) # 语音回答用户问题
+        
         text2speech('我说完了，大家还有问题吗？', index=1000)
 
         STATUS.set_is_QAing(False)
@@ -318,7 +330,7 @@ class NavigationClass(InterruptClass):
 
         print(f"开始行走...")
         i = 0
-        while i < 1000000:
+        while i < 100:
             print(f"iiiiiiii: ", i)
             sleep(0.1)
             i += 1
@@ -516,7 +528,7 @@ class MainClass:
 
         # 设置所有功能开关
         STATUS.set_TAKE_ACTION(False)
-        STATUS.set_FACE_DETECT(False)
+        STATUS.set_FACE_DETECT(True)
         STATUS.set_OBSTAC_STOP(True)
 
         rospy.init_node('interrupt', anonymous=True)
@@ -544,8 +556,8 @@ class MainClass:
             print(f"打断回调函数接收到打断信号，不可以打断")
 
     def face_callback(self, data):
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s from face", data.data)
-        print(f"人脸回调函数接收到人脸信号")
+        # rospy.loginfo(rospy.get_caller_id() + "I heard %s from face", data.data)
+        # print(f"人脸回调函数接收到人脸信号")
         if data.data == "NOBIGFACE":
             STATUS.set_Big_Face_Area("NOBIGFACE")
         elif data.data == "LEFT":
@@ -585,13 +597,18 @@ class MainClass:
     
     def welcome(self, ):
         STATUS.set_is_QAing(True)
-        # text2speech("如果需要我，请说，“夸父同学”", index=1000)
+        print("iam ready")
+        while True:
+            if STATUS.is_Big_Face_Detected:
+                text2speech("各位游客大家好，欢迎来到哈工大航天馆，我是展厅机器人，夸父，如果需要我带您参观，请对我说，“夸父同学”", index=1000)
+                STATUS.set_is_QAing(False)
+                break
         time.sleep(0.5)
         STATUS.set_is_QAing(False)
         
-        # 麦克风不可用，手动唤醒
-        msg = String('夸父同学')
-        self.ivw_callback(msg)
+        # # 麦克风不可用，手动唤醒
+        # msg = String('夸父同学')
+        # self.ivw_callback(msg)
         
         while True:
             if STATUS.is_Interrupted:

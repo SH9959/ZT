@@ -39,7 +39,7 @@ class Ws_Param(object):
         # 公共参数(common)
         self.CommonArgs = {"app_id": self.APPID}
         # 业务参数(business)，更多个性化参数可在官网查看
-        self.BusinessArgs = {"aue":"lame", "sfl":1, "auf":"audio/L16;rate=16000", "vcn":"aisbabyxu", "bgs":0, "tte":"utf8","speed":55}
+        self.BusinessArgs = {"aue":"lame", "sfl":1, "auf":"audio/L16;rate=16000", "vcn":"x4_qige", "bgs":0, "tte":"utf8","speed":55}
         self.Data = {"status": 2, "text": str(base64.b64encode(self.Text.encode('utf-8')), "UTF8")}
         #使用小语种须使用以下方式，此处的unicode指的是 utf16小端的编码方式，即"UTF-16LE"”
         #self.Data = {"status": 2, "text": str(base64.b64encode(self.Text.encode('utf-16')), "UTF8")}
@@ -215,7 +215,7 @@ def kedaxunfei_tts_server():
 if __name__ == "__main__":
     # with open("/home/kuavo/catkin_dt/src/voice_pkg/temp_record/tts_sentence.txt", "r") as f:
     #   textinput = f.read()
-    textinput = sys.argv[1]
+    textinput = '你好啊，我叫七哥'
     get_tts(textinput)
     # # kedaxunfei_tts_server()
     # # tts_playsound('你好', index=0)

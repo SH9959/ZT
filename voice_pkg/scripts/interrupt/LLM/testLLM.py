@@ -285,8 +285,8 @@ def if_pronoun_rewrite():
     return 0
     
 if __name__ == '__main__':
-    doc_qa_class = DocumentQAGPT4()
-    # doc_qa_class = DocumentQAHuoZi()
+    # doc_qa_class = DocumentQAGPT4()
+    doc_qa_class = DocumentQAHuoZi()
 
     print(doc_qa_class.process_query("介绍一下东方红一号"))
     print(doc_qa_class.process_query("介绍一下他的重量、长度"))
