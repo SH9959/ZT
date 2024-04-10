@@ -65,7 +65,7 @@
     },   
     {
         "id":9,
-        "action_name":"结束POSE", 
+        "action_name":"讲解结束 合影 介绍完毕", 
         "action_time":15,
         "action_description":["右手居中", "摆POSE"],
         "action_scene_hsong":"当讲解结束时，机器人可以摆POSE，也可以用于合影。",
