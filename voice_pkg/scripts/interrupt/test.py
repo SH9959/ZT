@@ -5,6 +5,7 @@ from .api import get_llm_check
 
 if __name__ == '__main__':
     model = 'gpt-4'
+    # model = 'chatglm'
 
     # text = "我想看看东方红"
     # text = "带我继续参观"

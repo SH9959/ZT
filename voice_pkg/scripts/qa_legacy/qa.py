@@ -15,8 +15,15 @@ import requests
 # import jieba.posseg as pseg
 # from zhkeybert import KeyBERT, extract_kws_zh
 from zhipuai import ZhipuAI
+import json
 
 # https://pypi.tuna.tsinghua.edu.cn/simple
+
+def get_zhipu_key():
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    zhipu_api_key = config['zhipu_apikey']
+    return zhipu_api_key
 
 # 创建一个 Redis 连接对象
 # r = redis.Redis(host='localhost', port=6379, db=0)
@@ -283,7 +290,8 @@ def test_stream_chat(maas, prompt, querys, answers):
     yield ""
 
 def glm_stream(prompt, querys, answers):
-    client = ZhipuAI(api_key="69fa620b35d1a149b51e42113a6f2a2d.lOvNyS68LL3Dc5ef") # 请填写您自己的APIKey
+    zhipu_api_key = get_zhipu_key()
+    client = ZhipuAI(api_key=zhipu_api_key) # 请填写您自己的APIKey
 
     conversations = []
     for i in range(len(querys)):
@@ -350,7 +358,8 @@ def test_chat(maas, prompt, querys="", answers=""):
         print("glm请求超时")
 
 def glm_once(prompt, querys="", answers=""):
-    client = ZhipuAI(api_key="69fa620b35d1a149b51e42113a6f2a2d.lOvNyS68LL3Dc5ef") # 填写您自己的APIKey
+    zhipu_api_key = get_zhipu_key()
+    client = ZhipuAI(api_key=zhipu_api_key) # 填写您自己的APIKey
 
     conversations = []
     for i in range(len(querys)):

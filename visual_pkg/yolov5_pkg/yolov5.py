@@ -27,7 +27,7 @@ class yolov5():
     """
 
     def __init__(self, modelpath, confThreshold=0.5, nmsThreshold=0.5, objThreshold=0.5):
-        with open('/home/kuavo/catkin_dt/src/visual_pkg/yolov5_pkg/class.names', 'rt') as f:
+        with open('/home/kuavo/catkin_dt/src/checkpoints/yolov5weight/class.names', 'rt') as f:
             self.classes = f.read().rstrip('\n').split('\n')  # 类别列表
         self.num_classes = len(self.classes)  # 类别个数
         if modelpath.endswith('6.onnx'):
@@ -172,7 +172,7 @@ class YoloPub():
         self.depth = np.empty([480,640], dtype = np.float64)
         self.bridge = CvBridge()
         # 设置 yolov5 网络
-        modelpath = '/home/kuavo/catkin_dt/src/visual_pkg/yolov5_pkg/weights/yolov5s.onnx'
+        modelpath = '/home/kuavo/catkin_dt/src/checkpoints/yolov5weight/yolov5s.onnx'
         confThreshold = 0.3
         nmsThreshold = 0.5
         objThreshold = 0.3

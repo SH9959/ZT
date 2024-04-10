@@ -241,8 +241,11 @@ def iat_web_api(req, iter=1):
         print('speechrecognition cost = ', time2 - time1)
 
 
-    wsParam = Ws_Param(APPID='c57ccaf5', APISecret='NjM0NjcxNmI4OGVhMWUzOTNhMDAxOTYx',
-                       APIKey='b1d7d520b0c50e9442d0be07545b76d5',
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    APPID, APISecret, APIKey = config['kedaxunfei_appid'], config['kedaxunfei_apiSecret'], config['kedaxunfei_appkey']
+    wsParam = Ws_Param(APPID=APPID, APISecret=APISecret,
+                       APIKey=APIKey,
                        AudioFile=savepath)
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()

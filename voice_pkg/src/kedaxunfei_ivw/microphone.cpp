@@ -263,13 +263,50 @@ void ivwIns(){
     }
 }
 
+std::string getValueForKey(const std::string& jsonString, const std::string& key) {
+    size_t found = jsonString.find("\"" + key + "\":");
+    if (found != std::string::npos) {
+        size_t start = found + key.length() + 4;
+        size_t end = jsonString.find_first_of("\",}", start);
+        if (end != std::string::npos) {
+            return jsonString.substr(start, end - start);
+        }
+    }
+    return ""; // 如果未找到，返回空字符串
+}
 void TestIVW(){
+
+    // 打开 JSON 文件
+    std::ifstream file("/home/kuavo/catkin_dt/config_dt.json");
+
+    std::string line;
+    std::string jsonContent;
+
+    // 逐行读取 JSON 文件内容
+    while (std::getline(file, line)) {
+        jsonContent += line;
+    }
+
+    // 关闭文件
+    file.close();
+
+    // 想要查找的键
+    std::string mic_appID_Key = "mic_appID";
+    std::string mic_apiKey_Key = "mic_apiKey";
+    std::string mic_apiSecret_Key = "mic_apiSecret";
+    // 查找键对应的值
+    std::string mic_appID = getValueForKey(jsonContent, mic_appID_Key);
+    std::string mic_apiKey = getValueForKey(jsonContent, mic_apiKey_Key);
+    std::string mic_apiSecret = getValueForKey(jsonContent, mic_apiSecret_Key);
+    std::cout << "mic_appID" << mic_appID << std::endl;
+    std::cout << "mic_apiKey" << mic_apiKey << std::endl;
+    std::cout << "mic_apiSecret" << mic_apiSecret << std::endl;
 
     AIKIT_Configurator::builder()
                         .app()
-                            .appID("c57ccaf5")
-                            .apiKey("b1d7d520b0c50e9442d0be07545b76d5")
-                            .apiSecret("NjM0NjcxNmI4OGVhMWUzOTNhMDAxOTYx")
+                            .appID(mic_appID.c_str())
+                            .apiKey(mic_apiKey.c_str())
+                            .apiSecret(mic_apiSecret.c_str())
                             .workDir("./")
                         .auth()
                             .authType(0)

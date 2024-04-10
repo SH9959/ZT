@@ -19,6 +19,7 @@ os.environ["http_proxy"] = "http://localhost:7890"
 os.environ["https_proxy"] = "http://localhost:7890"
 """openai.APIConnectionError: Connection error"""
 
+import json
 import httpx
 from hashlib import sha256
 from openai import OpenAI, AsyncOpenAI
@@ -35,6 +36,13 @@ from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTempla
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredFileLoader
 from datetime import datetime
+
+def get_zhipu_key():
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    zhipu_api_key = config['zhipu_apikey']
+    return zhipu_api_key
+
 class OpenAiBuilder:
     username = None
     password = None
@@ -98,6 +106,7 @@ db2 = Chroma.from_documents(texts, embeddings,persist_directory="./chroma/news_t
 # state = 'huozi'
 state = 'chatglm'
 # state = 'chatgpt4'
+zhipu_api_key = get_zhipu_key()
 if state == 'huozi':
     username = "陈一帆"
     password_path = "/home/kuavo/catkin_zt/src/ros2_zt/ros2_zt/password.txt"
@@ -173,7 +182,7 @@ if state == 'huozi':
 elif state == 'chatglm':
     llm = ChatZhipuAI(
         model="chatglm_turbo",
-        api_key="69fa620b35d1a149b51e42113a6f2a2d.lOvNyS68LL3Dc5ef",
+        api_key=zhipu_api_key,
         temperature=0.1
     )
     # 创建聊天提示模板，包含一个系统消息、一个聊天历史占位符和一个人类消息模板。

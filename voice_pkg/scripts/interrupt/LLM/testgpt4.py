@@ -6,6 +6,7 @@ os.environ["https_proxy"] = "http://localhost:7890"
 
 import time
 import yaml
+import json
 from openai import OpenAI
 
 from ..utils import read_yaml_from_parent
@@ -14,11 +15,9 @@ from ..utils import read_yaml_from_parent
 # https://platform.openai.com/docs/guides/text-generation/chat-completions-api
 
 def get_gpt4_key():
-    # 读取openai api key
-    config_path = read_yaml_from_parent(config_filename='prompt_config.yaml', parent_levels=1)
-    with open(config_path, 'r', encoding='utf-8') as file:
-        config = yaml.safe_load(file)
-    openai_api_key = config['openai_api_key'][0]
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    openai_api_key = config['openai_api_key']
     return openai_api_key
 
 def gpt(model:str, text:str):

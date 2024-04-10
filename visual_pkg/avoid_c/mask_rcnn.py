@@ -7,8 +7,8 @@ import numpy as np
 class MaskRCNN:
     def __init__(self):
         # Loading Mask RCNN
-        self.net = cv2.dnn.readNetFromTensorflow("/home/kuavo/catkin_dt/src/visual_pkg/avoid_c/dnn/frozen_inference_graph_coco.pb",
-                                            "/home/kuavo/catkin_dt/src/visual_pkg/avoid_c/dnn/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt")
+        self.net = cv2.dnn.readNetFromTensorflow("/home/kuavo/catkin_dt/src/checkpoints/rcnndnn/frozen_inference_graph_coco.pb",
+                                            "/home/kuavo/catkin_dt/src/checkpoints/rcnndnn/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt")
         self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
         self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
@@ -21,7 +21,7 @@ class MaskRCNN:
         self.mask_threshold = 0.3
 
         self.classes = []
-        with open("/home/kuavo/catkin_dt/src/visual_pkg/avoid_c/dnn/classes.txt", "r") as file_object:
+        with open("/home/kuavo/catkin_dt/src/checkpointskpoints/rcnndnn/classes.txt", "r") as file_object:
             for class_name in file_object.readlines():
                 class_name = class_name.strip()
                 self.classes.append(class_name)

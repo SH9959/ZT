@@ -136,9 +136,12 @@ def get_tts(textinput):
 
     
     # 测试时候在此处正确填写相关信息即可运行
-    wsParam = Ws_Param(APPID='c57ccaf5', APISecret='NjM0NjcxNmI4OGVhMWUzOTNhMDAxOTYx',
-                       APIKey='b1d7d520b0c50e9442d0be07545b76d5',
-                       Text=textinput)
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    APPID, APISecret, APIKey = config['kedaxunfei_appid'], config['kedaxunfei_apiSecret'], config['kedaxunfei_appkey']
+    wsParam = Ws_Param(APPID=APPID, APISecret=APISecret,
+                       APIKey=APIKey,
+                       AudioFile=savepath)
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close)

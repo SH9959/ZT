@@ -15,11 +15,13 @@ import _thread as thread
 from pydub.playback import play
 from pydub import AudioSegment
 import audioop
-
+import json
 def get_text(wav_path):
     with open(wav_path, "rb") as fp:
         data = fp.read()
-    SecretId, SecretKey = "AKIDnZTDmAOSKsWEa8eEwYIznWC6CITeuIfB","zDNnM4nVHyogTClS8pkt198E0ocREBES"
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    SecretId, SecretKey = config['tencentcloud_SecretId'], config['tencentcloud_SecretKey']
     try:
         # 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
         # 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
@@ -116,8 +118,8 @@ def get_wav(audio_file, input='ding'):
     #     return  
 
 def iat_tencent(text='ding'):
-    audio_file = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic.wav'
-    get_wav(audio_file, input='ding')
+    audio_file = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic_new_new_new_takeoff_0.wav'
+    # get_wav(audio_file, input='ding')
     print('finish mic: ', datetime.now())
     # audio_file = '/home/kuavo/catkin_zt/src/voice_pkg/temp_record/111.wav'
     res = get_text(audio_file)

@@ -4,10 +4,18 @@ os.environ["http_proxy"] = "http://localhost:7890"
 os.environ["https_proxy"] = "http://localhost:7890"
 """openai.APIConnectionError: Connection error"""
 
+import json
 from zhipuai import ZhipuAI
 
+def get_zhipu_key():
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    zhipu_api_key = config['zhipu_apikey']
+    return zhipu_api_key
+
 def glm_stream(query, system_prompt=None, few_shots=None, debug=False):
-    client = ZhipuAI(api_key="69fa620b35d1a149b51e42113a6f2a2d.lOvNyS68LL3Dc5ef") # 填写您自己的APIKey
+    zhipu_api_key = get_zhipu_key()
+    client = ZhipuAI(api_key=zhipu_api_key) # 填写您自己的APIKey
 
     if system_prompt is None:
         system_prompt = ""
@@ -64,8 +72,8 @@ def text_correct():
         print("\n")
 
 if __name__ == 'main':
-    text_correct()
+    # text_correct()
 
-# reslist = glm_stream(text="你好")
-# for r in reslist:
-#     print(r, end='')
+    reslist = glm_stream(text="你好")
+    for r in reslist:
+        print(r, end='')

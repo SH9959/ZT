@@ -210,8 +210,11 @@ def kedaxunfei_iat_service(savepath):
         print('speechrecognition cost = ', time2 - time1)
 
 
-    wsParam = Ws_Param(APPID='c57ccaf5', APISecret='NjM0NjcxNmI4OGVhMWUzOTNhMDAxOTYx',
-                       APIKey='b1d7d520b0c50e9442d0be07545b76d5',
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    APPID, APISecret, APIKey = config['kedaxunfei_appid'], config['kedaxunfei_apiSecret'], config['kedaxunfei_appkey']
+    wsParam = Ws_Param(APPID=APPID, APISecret=APISecret,
+                       APIKey=APIKey,
                        AudioFile=savepath)
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
@@ -250,9 +253,9 @@ def kedaxunfei_iat_service(savepath):
 def tencentcloud_iat(savepath):
     with open(savepath, "rb") as fp:
         data = fp.read()
-    print(base64.b64encode(data).decode(encoding='utf-8'))
-    print(len(data))
-    SecretId, SecretKey = "xxx","yyy"
+    with open('/home/kuavo/catkin_dt/config_dt.json', 'r') as fj:
+        config = json.load(fj)
+    SecretId, SecretKey = config['tencentcloud_SecretId'], config['tencentcloud_SecretKey']
     try:
         # 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
         # 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
