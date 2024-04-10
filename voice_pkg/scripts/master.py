@@ -526,11 +526,6 @@ class MainClass:
 
         self.temp_last_area = None # 上一个目标点只有在下一次导航开启的时候才会被更新
 
-        # 设置所有功能开关
-        STATUS.set_TAKE_ACTION(False)
-        STATUS.set_FACE_DETECT(True)
-        STATUS.set_OBSTAC_STOP(True)
-
         rospy.init_node('interrupt', anonymous=True)
         self.ivw_sub = rospy.Subscriber("ivw_chatter", String, self.ivw_callback) # 订阅ivw话题，唤醒词
         if STATUS.FACE_DETECT:
@@ -543,7 +538,19 @@ class MainClass:
         
         STATUS.set_Stop_Publisher(rospy.Publisher("stopper_msg", actionStopper, queue_size=1))
 
+        self.settings()
         self.welcome()
+
+    def settings():
+        # 设置所有功能开关
+        STATUS.set_TAKE_ACTION(False)
+        STATUS.set_FACE_DETECT(True)
+        STATUS.set_OBSTAC_STOP(True)
+
+        # 选择大语言模型
+        STATUS.MODEL_TASK_TYPE = 'chatglm' # chatglm gpt-4 gpt-3.5-turbo
+        STATUS.MODEL_LLM_ANSWER = 'huozi' # huozi gpt-4
+        STATUS.MODEL_BAN_OPENAI = False
 
     def ivw_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s from ivw", data.data)

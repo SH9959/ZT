@@ -36,7 +36,9 @@ class GlobalValuesClass:
 
             MODEL_TASK_TYPE:str = "",                       # 用于做任务分类的模型
             MODEL_LLM_ANSWER:str = "",                      # 用于回答问题的模型
-            MODEL_BAN_OPENAI:str = "",                      # 是否禁用OpenAI
+            MODEL_BAN_OPENAI:bool=False,                    # 是否禁用OpenAI
+
+            LOW_COMPUTER_EXIST:bool=False,                  # 下位机是否存在
             
             info: Optional[str] = None,                     # 当前实例的描述信息，随意
             name:str="This is a glabolvalues",              # 当前实例的描述信息，随意
@@ -95,6 +97,8 @@ class GlobalValuesClass:
         self.MODEL_TASK_TYPE = MODEL_TASK_TYPE
         self.MODEL_LLM_ANSWER = MODEL_LLM_ANSWER
         self.MODEL_BAN_OPENAI = MODEL_BAN_OPENAI
+
+        self.LOW_COMPUTER_EXIST = LOW_COMPUTER_EXIST
         
         if info is None:
             info = f"Hello! Description here." 
@@ -157,6 +161,18 @@ class GlobalValuesClass:
 
     def set_POSE_DETECT(self, new_POSE_DETECT:bool=False) -> None:
         self.POSE_DETECT = new_POSE_DETECT
+
+    def set_MODEL_TASK_TYPE(self, new_MODEL_TASK_TYPE:str="None") -> None:
+        self.MODEL_TASK_TYPE = new_MODEL_TASK_TYPE
+
+    def set_MODEL_LLM_ANSWER(self, new_MODEL_LLM_ANSWER:str="None") -> None:
+        self.MODEL_LLM_ANSWER = new_MODEL_LLM_ANSWER
+    
+    def set_MODEL_BAN_OPENAI(self, new_MODEL_BAN_OPENAI:bool=False) -> None:
+        self.MODEL_BAN_OPENAI = new_MODEL_BAN_OPENAI
+
+    def set_LOW_COMPUTER_EXIST(self, new_LOW_COMPUTER_EXIST:bool=False) -> None:
+        self.LOW_COMPUTER_EXIST = new_LOW_COMPUTER_EXIST
 
     def set_is_Navigating(self, new_is_Navigating:bool=False) -> None:
         self.is_Navigating = new_is_Navigating
