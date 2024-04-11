@@ -38,7 +38,7 @@ def checkh5py():
         print(hf.values)
 # 获取第二个设备的信息（索引为1）
 # get_device_info_by_index(0)
-# get_device_info_by_index(5)
+get_device_info_by_index(1)
 # get_device_info_by_index(6)
 # get_device_info_by_index(10)
 # get_device_info_by_index(11)

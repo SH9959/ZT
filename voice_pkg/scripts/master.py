@@ -328,6 +328,8 @@ class InterruptClass:
                 response = command_client(action_code=action_name) # 向服务发送请求，阻塞，直至到达目标点才会返回
             except rospy.ROSException as e: # 如果通信异常
                 print("向下位机发送 动作 命令 - 服务报错: %s"%e)
+
+            print("taking action's response: ", response)
         else:
             print(f"\n向下位机发送 {action_name} 动作指令")
     
@@ -394,10 +396,12 @@ class NavigationClass(InterruptClass):
             except rospy.ROSException as e: # 如果通信异常
                 print("向下位机发送 导航 命令 - 服务报错: %s"%e)
 
+            print("move to target's response: ", response)
+
         else:
             print(f"开始行走...")
             i = 0
-            while i < 30:
+            while i < 100:
                 print(f"iiiiiiii: ", i)
                 sleep(0.1)
                 i += 1
@@ -405,6 +409,7 @@ class NavigationClass(InterruptClass):
                     break
             print(f"机器人停止...{i}")
         
+        print("机器人停止")
         self.stopped = True # 机器人停止
         if not STATUS.Block_Navigation_Thread and not STATUS.is_Interrupted:
             self.arrived = True
@@ -454,14 +459,14 @@ class NavigationClass(InterruptClass):
                     i = 0
                     while STATUS.is_Depth_Obstacle or STATUS.is_Yolo_Obstacle:
                         time.sleep(0.1)
-                        if i % 30 == 0:
+                        if i % 20 == 0:
                             print("\n语音提示用户避让")
-                            text2speech("你好，请让一让", index=0)
+                            text2speech("你好，请让一让", index=1000) # 权益之计：index从0改为1000
                         i += 1
                     
                     STATUS.set_Block_Navigation_Thread(False)
 
-                    thread.start_new_thread(self.request_service_and_send_destination, (STATUS.get_first_Current_Order_of_Visit_id(),)) # 启动线程用于向下位机发送导航目标点
+                    thread.start_new_thread(self.request_service_and_send_destination, (STATUS.get_first_Current_Order_of_Visit_id()+1,)) # 启动线程用于向下位机发送导航目标点
             
     def is_navigation_successful(self, ) -> bool:
         """判断是否到达指定地点。
@@ -547,7 +552,7 @@ class ExplainClass(InterruptClass):
                 # 发送文本到喇叭
                 print("发送文本到喇叭:", sentence_for_read)
 
-                text2speech(text=sentence_for_read, index=0)  # 0表示异步播放
+                text2speech(text=sentence_for_read, index=0)  # 0表示异步播放 # 权宜之计：index从0改为1000
                 
                 # 处理打断
                 interrupt_flag = self.listen_for_INT() # 监听打断信号
@@ -575,6 +580,8 @@ class ExplainClass(InterruptClass):
             STATUS.set_is_Explaining(False)
             return True
                      
+
+count = 0
 
 class MainClass:
     def __init__(self):
@@ -607,26 +614,29 @@ class MainClass:
         
         STATUS.set_Stop_Publisher(rospy.Publisher("stopper_msg", stopProcessing, queue_size=1))
 
+        print("\033[33mGlobalValues---INFO---\033[0m")
+        print(STATUS.__dict__)
+        
         self.welcome()
 
     def settings(self):
         # 设置所有功能开关
-        STATUS.set_TAKE_ACTION(False)
-        STATUS.set_FACE_DETECT(False)
-        STATUS.set_OBSTAC_STOP(False)
-        STATUS.set_ARM_ACTION(False)
+        STATUS.set_TAKE_ACTION(False)           # 问答时的主动动作
+        STATUS.set_FACE_DETECT(False)            # 人脸检测
+        STATUS.set_OBSTAC_STOP(True)            # 停障
+        STATUS.set_ARM_ACTION(False)            # 讲稿时的随机动作      
 
         # 选择大语言模型
-        STATUS.set_MODEL_TASK_TYPE('gpt-4') # chatglm gpt-4 gpt-3.5-turbo
-        STATUS.set_MODEL_LLM_ANSWER('gpt-4') # huozi gpt-4 bge-glm
+        STATUS.set_MODEL_TASK_TYPE('gpt-4')     # chatglm gpt-4 gpt-3.5-turbo
+        STATUS.set_MODEL_LLM_ANSWER('gpt-4')    # huozi gpt-4 bge-glm
         STATUS.set_MODEL_BAN_OPENAI(True)
 
         # 下位机是否存在
         STATUS.set_LOW_COMPUTER_EXIST(False)
 
         # 录音参数
-        STATUS.set_DURATION(2) # 无人说话时每轮录音的时间
-        STATUS.set_THRESHOLD_AUDIO(8) # 超过该音量阈值识别到有人讲话
+        STATUS.set_DURATION(2)                  # 无人说话时每轮录音的时间
+        STATUS.set_THRESHOLD_AUDIO(8)           # 超过该音量阈值识别到有人讲话
 
         if STATUS.MODEL_BAN_OPENAI:
             STATUS.set_MODEL_TASK_TYPE('chatglm')
@@ -655,7 +665,7 @@ class MainClass:
         else:
             STATUS.set_Big_Face_Area("CENTER")
             
-        if STATUS.Big_Face_Area == "CENTER":
+        if STATUS.Big_Face_Area != "NOBIGFACE":
             STATUS.set_is_Big_Face_Detected(True) # 检测到居中人脸
         else:
             STATUS.set_is_Big_Face_Detected(False) # 没有检测到居中人脸，需要转向
@@ -669,12 +679,19 @@ class MainClass:
             STATUS.set_is_Depth_Obstacle(False)
 
     def yolo_callback(self, data):
+        global count
         if data.data == '++++':
+            print('dkjfskfjalsk-=-=-=-=-=-=-=-=-=-=-=')
             if STATUS.set_is_Yolo_Obstacle(False):
                 print(f"YOLO回调函数接收到障碍物信号")
             STATUS.set_is_Yolo_Obstacle(True)
+            count = 0
         else:
-            STATUS.set_is_Yolo_Obstacle(False)
+            count += 1  
+            # print("count: ", count)       
+            if count > 10:
+                STATUS.set_is_Yolo_Obstacle(False)
+                count = 0
 
     def pose_callback(self, data):
         STATUS.set_POSE_DETECT_KEYWORD(data.data )
@@ -684,38 +701,43 @@ class MainClass:
     # TODO: 加上手势识别
     
     def welcome(self, ):
-        STATUS.set_is_QAing(True)
+        
         print("进入welcome阶段")
 
-        if STATUS.FACE_DETECT:
-            while True:
-                if STATUS.is_Big_Face_Detected:
-                    break
+        # if STATUS.FACE_DETECT:
+        #     while True:
+        #         if STATUS.is_Big_Face_Detected:
+        #             break
         
-        text2speech("各位游客", index=1000)
-        time.sleep(0.5)
-        STATUS.set_is_QAing(False)
         
         # 麦克风不可用，手动唤醒
         # msg = String('夸父同学')
         # self.ivw_callback(msg)
         
-        while True:
-            if STATUS.is_Interrupted:
-                STATUS.is_Interrupted = False
-                STATUS.Block_Navigation_Thread = False
-                self.main()
-                break
+        # while True:
+        #     if STATUS.is_Interrupted:
+        #         STATUS.is_Interrupted = False
+        #         STATUS.Block_Navigation_Thread = False
+
+        #         break
+        
+        # STATUS.set_is_QAing(True)
+        # # text2speech("各位游客大家好，欢迎来到哈工大航天馆，我是展厅机器人，夸父，如果需要我带您参观航天馆，请说，夸父同学", index=1000)
+        # text2speech("各位游客大家好，欢迎来到哈工大航天馆，我是展厅机器人，夸父，下面带您参观航天馆", index=1000)
+        # time.sleep(0.5)
+        # STATUS.set_is_QAing(False)
+
+        self.main()
         
     def main(self, ):
         while True:
             next_destination = STATUS.get_first_Current_Order_of_Visit_id() # 获取下一个目标点
             
             if next_destination != None: # 如果还有目标点，执行导航
-                print(f"\n执行去往 {next_destination} 号目标点的导航")
+                print(f"\n执行去往 {next_destination+1} 号目标点的导航")
 
                 text2speech(f"下面带大家参观{STATUS.Current_Order_of_Visit[0]}", index=1000)
-                thread.start_new_thread(self.navigation_class.request_service_and_send_destination, (next_destination,)) # 启动线程用于向下位机发送导航目标点
+                thread.start_new_thread(self.navigation_class.request_service_and_send_destination, (next_destination+1,)) # 启动线程用于向下位机发送导航目标点
 
                 STATUS.Last_Area = self.temp_last_area # 下一次导航开始时，记录上一次导航的目标点
                 if_success_navigate = self.navigation_class.interrupt_navigation() # 处理导航过程中的打断
@@ -727,7 +749,7 @@ class MainClass:
                     self.temp_last_area = STATUS.Current_Order_of_Visit.pop(0)
                     STATUS.Current_Area = STATUS.Origin_Order_of_Visit[next_destination]
 
-                    print(f"\n执行位于 {next_destination} 号目标点的讲解")
+                    print(f"\n执行位于 {next_destination+1} 号目标点的讲解")
 
                     if STATUS.ARM_ACTION:
                         STATUS.Arm_Action_Publisher.publish(9000) # 开启手臂动作
@@ -737,7 +759,7 @@ class MainClass:
 
                     print("\nif_success_explain: ", if_success_explain)
                     if if_success_explain: # 如果讲解成功，执行问答
-                        print(f"\n执行位于 {next_destination} 号目标点的问答")
+                        print(f"\n执行位于 {next_destination+1} 号目标点的问答")
 
                         self.start.handle_interrupt()
                 

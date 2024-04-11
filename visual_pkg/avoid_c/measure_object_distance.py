@@ -31,16 +31,17 @@ class RealsenseAvoid():
         
     def detect_obstacle(self, depth_image):
         ''' angle down!!!! '''
-        # depth_frame[0:360,:] = 0
-        # depth_frame[:,:80] = 0
-        # depth_frame[:,560:640] = 0
-        # depthsum = np.sum(depth_image) // (480*120*10)
-        # print(self.minx)
-        # self.minx = min(depthsum, self.minx)
-        # if depthsum < 38:
-        #    return 1
-        # else:
-        #    return 0
+        depth_frame = depth_image
+        depth_frame[0:360,:] = 0
+        depth_frame[:,:80] = 0
+        depth_frame[:,560:640] = 0
+        depthsum = np.sum(depth_image) // (480*120*10)
+        print(self.minx)
+        self.minx = min(depthsum, self.minx)
+        if depthsum < 189:
+           return 1
+        else:
+           return 0
         
         '''angle horizontal'''
         # remove bg

@@ -95,6 +95,8 @@ class yolov5():
             if detection[4] > self.objThreshold:
                 scores = detection[5:]
                 classId = np.argmax(scores)
+                if classId != 0:
+                    continue
                 confidence = scores[classId] * detection[4]
                 if confidence > self.confThreshold:
                     center_x = int((detection[0] - padw) * ratiow)
@@ -198,7 +200,7 @@ class YoloPub():
         while 1:
             detect_image, bottom_line = self.yolonet.detect(self.color)
 
-            if bottom_line > 380:
+            if bottom_line > 300:
               obs_str = "++++"
               rospy.loginfo(obs_str + str(rospy.get_time()))
               pub.publish(obs_str)

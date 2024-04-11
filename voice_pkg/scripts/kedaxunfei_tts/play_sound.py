@@ -24,7 +24,7 @@ def sd_play():
     # 指定设备索引或名称播放音频
     device_name = 'Bothlent UAC Dongle: USB Audio'  # 你可以根据实际情况替换这里的设备名称
 
-    sd.play(data, fs, device=0)
+    sd.play(data, fs, device=1)
 
 def audio_play():
     import pyaudio
@@ -65,6 +65,6 @@ def play_audio():
 
 if __name__ == '__main__':
     # playsound_work()
-    # play_sound()
+    play_sound()
     # sd_play()
-    play_audio()
+    # play_audio()
