@@ -1,7 +1,7 @@
 import wave
 import pyaudio
 import numpy as np
-import h5py
+# import h5py
 
 # 定义音频录制的参数
 FORMAT = pyaudio.paInt16  # 数据格式

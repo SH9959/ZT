@@ -1,7 +1,7 @@
 import wave
 import pyaudio
 import numpy as np
-import h5py
+# import h5py
 
 
 

@@ -1,4 +1,4 @@
-import pylab as plt
+# import pylab as plt
 import numpy as np
 import pyaudio
 

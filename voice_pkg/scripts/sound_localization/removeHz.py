@@ -1,6 +1,6 @@
 '''采样降噪'''
 from collections import Counter
-import librosa
+# import librosa
 
 
 def test2(n, y, sr):

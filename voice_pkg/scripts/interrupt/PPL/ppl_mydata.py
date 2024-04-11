@@ -1,11 +1,11 @@
 
 # ------------------------------
-# NgramsLanguageModel
+# Author: hsong
+# 工具函數
 # ------------------------------
 import time
 import jieba
 import json
-from .models import NgramsLanguageModel
 import pandas as pd
 from typing import List, Tuple, Dict
 # import debugpy # 导入包，可以放在前面
@@ -38,7 +38,7 @@ def txts2ppls(sentences:List[str], ft_model:str='bert', ft_data:str='t1', epoch:
     record = []
     M = ft_model
     # print(f"\033[33mmodel: {ft_model} ft data: {ft_data}.txt epoch: {epoch}\033[0m")
-    from .models import MaskedBert, MaskedAlbert
+    from models import MaskedBert, MaskedAlbert
     model = MaskedBert.from_pretrained(
     path=f"./chinese_bert_wwm_ext_pytorch_{ft_data}_epoch{epoch}",
     device="cpu",  # 使用cpu或者cuda:0，default=cpu
@@ -61,9 +61,9 @@ from typing import Union, List, Dict
 def get_ppl_for(sentence:Union[List[str],str]):  # 1句
     if not isinstance(sentence, List):
         sentence = [sentence]
-    from .models import MaskedBert, MaskedAlbert
+    from models import MaskedBert, MaskedAlbert
     model = MaskedBert.from_pretrained(
-    path="/home/kuavo/catkin_zt/src/interrupt/PPL/chinese_bert_wwm_ext_pytorch_t2_epoch40",
+    path="/home/kuavo/catkin_dt/src/voice_pkg/scripts/interrupt/PPL/chinese_bert_wwm_ext_pytorch_t2_epoch40",
     device="cpu",  # 使用cpu或者cuda:0，default=cpu
     sentence_length=50,  # 长句做切句处理，段落会被切成最大不超过该变量的句子集，default=50
     )
