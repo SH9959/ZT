@@ -30,11 +30,11 @@ savepath = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/play.wav'
 
 class Ws_Param(object):
     # 初始化
-    def __init__(self, APPID, APIKey, APISecret, Text):
+    def __init__(self, APPID, APIKey, APISecret, textinput):
         self.APPID = APPID
         self.APIKey = APIKey
         self.APISecret = APISecret
-        self.Text = Text
+        self.Text = textinput
 
         # 公共参数(common)
         self.CommonArgs = {"app_id": self.APPID}
@@ -141,7 +141,7 @@ def get_tts(textinput):
     APPID, APISecret, APIKey = config['kedaxunfei_appid'], config['kedaxunfei_apiSecret'], config['kedaxunfei_appkey']
     wsParam = Ws_Param(APPID=APPID, APISecret=APISecret,
                        APIKey=APIKey,
-                       AudioFile=savepath)
+                       textinput=textinput)
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close)
@@ -194,33 +194,15 @@ def tts_playsound(input, index=1000):
 
 lastproc = None
 
-def tts_playsound_terminate(input):
-    print('text = ', input)
-    get_tts(input)
-    
-    global lastproc
-    if lastproc:
-        lastproc.wait()
-
-    # 异步播放:
-    lastproc = subprocess.Popen(["python3", "/home/kuavo/catkin_dt/src/voice_pkg/scripts/playsound.py"])
-    # 等待的时间必不可少，因为会有playsound和tts的读写同一个文件的冲突，因此先playsound再让tts访问 play.wav
-    time.sleep(0.15)
-    return lastproc
-
-
-def kedaxunfei_tts_server():
-    rospy.init_node('kedaxunfei_tts_server')
-    s = rospy.Service('kedaxunfei_tts', VoiceSrv, tts_playsound)
-    print("ready kedaxunfei tts")
-    rospy.spin()
 
 if __name__ == "__main__":
     # with open("/home/kuavo/catkin_dt/src/voice_pkg/temp_record/tts_sentence.txt", "r") as f:
     #   textinput = f.read()
-    textinput = '你好啊，我叫七哥'
-    get_tts(textinput)
-    # # kedaxunfei_tts_server()
+    # textinput = '你好啊，我叫七哥'
+    savepath = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/play.wav'
+    text = sys.argv[1]
+    get_tts(text)
+    # kedaxunfei_tts_server()
     # # tts_playsound('你好', index=0)
     # # tts_playsound('你不好，你好，你好你好', index=1000)
     # proc = tts_playsound_terminate('你好，你好！你好，你好！', lastproc=None, index=0)

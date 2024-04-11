@@ -1,8 +1,6 @@
 import os
 import yaml
 
-from ..utils import read_yaml_from_parent
-
 from .testgpt4 import gpt
 from .testglm import glm_stream
 
@@ -56,16 +54,16 @@ def _prompt_construct_by_config(txt="我想看看东方红卫星", config_path="
     sceneset = "你是哈尔滨工业大学航天馆的展厅机器人，负责外来游客的导游任务。展厅有" + \
                "和".join([museum['name'] for museum in config['museums']]) + "。\n" + \
                "".join([f"{museum['name']}里有{', '.join(museum['exhibits'])}等，" for museum in config['museums']]).rstrip('，') + "。\n"
-    maintask = "你的主线任务是按照预定好的目标带游客按顺序参观航天馆的所有展厅包括" + \
+    maintask = "你的主线任务是按照预定好的目标带游客按顺序参观航天馆的所有展厅，包括" + \
                "和".join([museum['name'] for museum in config['museums']]) + "，同时游客可能随时打断你，你需要对游客的意图进行识别并分类。\n"
     
     # 构造few shot部分
     tasks_list = config['task_categories']
     few_shots = {
-        "参观": "当你识别到游客明确想要参观某个展厅时，比如游客说“{}”、“{}”，你需要将任务分类到“参观”，进而终止当前的主线任务，导航到游客指定的展厅，并输出‘参观 卫星展厅’或‘参观 火箭展厅’或‘参观 上一个’或‘参观 下一个’; ".format("”或“".join(config['few_shots']['参观']), "”或“".join(config['few_shots']['参观-相对'])),
-        "问答": "当你识别到游客提出了一个问题时，比如游客说“{}”（明确说明展品名称（例如“北斗卫星”））、“{}”（用户可能在用手指指向某一个展品（只是说了“这个”）），你需要将任务分类到“问答”，进而执行问答任务，并根据游客是不是有可能正在指着一个展品，输出‘问答’或‘问答 指着’;".format("”或“".join(config['few_shots']['问答']), "”或“".join(config['few_shots']['问答-指向'])),
-        "休眠": "当你识别到游客想要打断你正在执行的任务时，比如“{}”，你需要将任务分类到“休眠”，进而停止你所有正在执行的任务，进入等待状态，并输出‘休眠’；".format("”或“".join(config['few_shots']['休眠'])),
-        "继续": "当你识别到游客想让你继续主线任务时，比如“{}”，你需要将任务分类到继续，从而继续执行主线任务，并输出‘继续’。".format("”或“".join(config['few_shots']['继续'])),
+        "参观": "当你识别到游客明确想要参观某个展厅时，比如游客说“{}”、“{}”，你需要将任务分类到“参观”，进而终止当前的主线任务，导航到游客指定的展厅，并输出“{}”或“{}”; ".format("”或“".join(config['few_shots']['Q-参观']), "”或“".join(config['few_shots']['Q-参观-相对']), "”或“".join(config['few_shots']['A-参观']), "”或“".join(config['few_shots']['A-参观'])),
+        "问答": "当你识别到游客提出了一个问题时，比如游客说“{}”（明确说明展品名称（例如“北斗卫星”））、“{}”（用户可能在用手指指向某一个展品（只是说了“这个”）），你需要将任务分类到“问答”，进而执行问答任务，并根据游客是不是有可能正在指着一个展品，输出“{}”或“{}”;".format("”或“".join(config['few_shots']['Q-问答']), "”或“".join(config['few_shots']['Q-问答-指向']), "”或“".join(config['few_shots']['A-问答']), "”或“".join(config['few_shots']['A-问答-指向'])),
+        "休眠": "当你识别到游客想要打断你正在执行的任务时，比如“{}”，你需要将任务分类到“休眠”，进而停止你所有正在执行的任务，进入等待状态，并输出“{}”；".format("”或“".join(config['few_shots']['Q-休眠']), "”或“".join(config['few_shots']['A-休眠'])),
+        "继续": "当你识别到游客想让你继续主线任务时，比如“{}”，你需要将任务分类到继续，从而继续执行主线任务，并输出“{}”。\n".format("”或“".join(config['few_shots']['Q-继续']), "”或“".join(config['few_shots']['A-继续'])),
     }
 
     taskset = "\n".join(few_shots.values())
@@ -87,7 +85,7 @@ def sleep_judge(text=None, model='gpt-4', mode='llm'):
         # query = _prompt_construct(text)
 
         # 根据配置文件灵活改写的prompt
-        config_path = read_yaml_from_parent(config_filename='prompt_config.yaml', parent_levels=1)
+        config_path = "/home/kuavo/catkin_dt/src/voice_pkg/scripts/config/prompt_config.yaml"
         query = _prompt_construct_by_config(txt=text, config_path=config_path)
 
     # print('\nLLM task classification prompt: \n', query, '\n')

@@ -14,7 +14,7 @@ import math
 class RealsenseAvoid():
     def __init__(self) -> None:
         self.color_frame_sub = rospy.Subscriber('/camera/color/image_raw', Image, self.color_callback)
-        self.depth_frame_sub = rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_callback)
+        self.depth_frame_sub = rospy.Subscriber('/camera/depth/image_rect_raw', Image, self.depth_callback)
         self.color = np.empty([480,640,3], dtype = np.uint8)
         self.depth = np.empty([480,640], dtype = np.float64)
         self.depth_threshold = 800
@@ -95,7 +95,7 @@ class RealsenseAvoid():
         return shape_middle_x, shape_middle_y
 
     def process_image(self, ):
-        cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+        cv2.namedWindow('depthobject', cv2.WINDOW_AUTOSIZE)
         while not self.depth.any() or not self.color.any():
             # 如果都是空的，也就是一张图片都还没来，就循环等待相机开启
             print('waiting')

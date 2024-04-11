@@ -167,7 +167,7 @@ class yolov5():
 class YoloPub():
     def __init__(self) -> None:
         self.color_frame_sub = rospy.Subscriber('/camera/color/image_raw', Image, self.color_callback)
-        self.depth_frame_sub = rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_callback)
+        self.depth_frame_sub = rospy.Subscriber('/camera/depth/image_rect_raw', Image, self.depth_callback)
         self.color = np.empty([480,640,3], dtype = np.uint8)
         self.depth = np.empty([480,640], dtype = np.float64)
         self.bridge = CvBridge()

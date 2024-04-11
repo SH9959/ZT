@@ -21,29 +21,29 @@ import numpy as np
 
 
 
-def remove_noise_freq(data, lower_bound, upper_bound, rate):
-    # FFT
-    fft_data = np.fft.fft(data)
-    freqs = np.fft.fftfreq(len(fft_data), 1/rate)
+# def remove_noise_freq(data, lower_bound, upper_bound, rate):
+#     # FFT
+#     fft_data = np.fft.fft(data)
+#     freqs = np.fft.fftfreq(len(fft_data), 1/rate)
     
-    # 找到需要去除的频率范围的索引
-    idx_band = np.where((freqs >= lower_bound) & (freqs <= upper_bound) | (freqs <= -lower_bound) & (freqs >= -upper_bound))
+#     # 找到需要去除的频率范围的索引
+#     idx_band = np.where((freqs >= lower_bound) & (freqs <= upper_bound) | (freqs <= -lower_bound) & (freqs >= -upper_bound))
     
-    # 将这些频率的FFT系数设置为零
-    fft_data[idx_band] = 0
+#     # 将这些频率的FFT系数设置为零
+#     fft_data[idx_band] = 0
     
-    # IFFT转换回时域
-    clean_data = np.fft.ifft(fft_data)
-    return np.real(clean_data).astype(np.int16)
+#     # IFFT转换回时域
+#     clean_data = np.fft.ifft(fft_data)
+#     return np.real(clean_data).astype(np.int16)
 
-from scipy.io import wavfile
-from scipy.signal import firwin, lfilter
-# 使用firwin设计带阻滤波器
-lowcut = 1200
-highcut = 1400
-ntaps = 81  # 滤波器的阶数，需要根据实际情况调整
-band_stop_edges = [lowcut, highcut]
-fir_coeff = firwin(ntaps, band_stop_edges, pass_zero=True, window='hamming', fs=RATE)
+# from scipy.io import wavfile
+# from scipy.signal import firwin, lfilter
+# # 使用firwin设计带阻滤波器
+# lowcut = 1200
+# highcut = 1400
+# ntaps = 81  # 滤波器的阶数，需要根据实际情况调整
+# band_stop_edges = [lowcut, highcut]
+# fir_coeff = firwin(ntaps, band_stop_edges, pass_zero=True, window='hamming', fs=RATE)
 
 
 
@@ -70,9 +70,9 @@ fir_coeff = firwin(ntaps, band_stop_edges, pass_zero=True, window='hamming', fs=
  
  # 定义音频录制的参数
 FORMAT = pyaudio.paInt16  # 数据格式
-CHANNELS = 2  # 通道数，这里假设你有6个麦克风
-RATE = 16000  # 采样率
-CHUNK = 3000  # 每次读取的数据块大小
+CHANNELS = 1  # 通道数，这里假设你有6个麦克风
+RATE = 48000  # 采样率
+CHUNK = 4000  # 每次读取的数据块大小
 RECORD_SECONDS = 3  # 录制时间
 filename = '/home/kuavo/catkin_dt/src/voice_pkg/scripts/sound_localization/manvoice.wav'
 
@@ -86,7 +86,7 @@ stream = p.open(format=FORMAT,
                 rate=RATE,
                 input=True,
                 frames_per_buffer=CHUNK,
-                # input_device_index=5
+                input_device_index=6
                 )
 
 print("Recording...")
@@ -95,10 +95,10 @@ frames = []
 
 # 开始录制
 for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
+    data = stream.read(CHUNK, exception_on_overflow=False)
     frame = np.frombuffer(data, dtype=np.int16)
-    channel0 = frame[0::CHANNELS]
-    channel2 = frame[1::CHANNELS]
+    # channel0 = frame[0::CHANNELS]
+    # channel2 = frame[1::CHANNELS]
     # frame = remove_noise_freq(frame, 1200, 1400, RATE)
     # frame = remove_noise_freq(frame, 0, 50, RATE)
     frames.append(frame)
@@ -129,7 +129,7 @@ wf.close()
 
 
 # 将捕获的数据转换为NumPy数组
-audio_data = np.stack(frames)
+# audio_data = np.stack(frames)
 
 # 创建HDF5文件并写入音频数据
 # with h5py.File(filename.replace('wav', 'h5'), 'w') as hf:

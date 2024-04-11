@@ -10,7 +10,7 @@ import yaml, os
 from copy import deepcopy
 
 from std_msgs.msg import String
-from main.msg import actionStopper
+from harbin_pkg.msg import stopProcessing
 
 class GlobalValuesClass:
     """
@@ -22,6 +22,7 @@ class GlobalValuesClass:
         
     到达一个地方，需要维护：
         STATUS.set_Current_Area(new_Current_Area)
+        ...
     """
 
     _id = 0 
@@ -71,20 +72,44 @@ class GlobalValuesClass:
             Interrupt_Area:Optional[str]=None,              # 移动被打断时 记录当时所处的展厅区域 *
             Interrupt_Position:Optional[List[float]]=None,  # 移动被打断时 记录当时所处的精确坐标
 
-            Stop_Publisher:Optional[actionStopper]=None,    # 停止发布者
+            Stop_Publisher:Optional[stopProcessing]=None,    # 停止发布者
             Arm_Action_Publisher:Optional[String]=None,     # 手臂动作发布者
             
             Origin_Order_of_Visit:List[str]=[               # robot默认原始参观顺序列表
-                "火箭展厅", 
-                "卫星展厅", 
-                "航天器展厅", 
-                "运载火箭展厅"
+                "东方红一号展区", 
+                "孙家栋院士成就展区", 
+                "中国航天工程成就展区", 
+                "中国人造地球卫星展区", 
+                "气象卫星风云四号展区", 
+                "北斗导航卫星展区", 
+                "科学实验卫星墨子号展区", 
+                "气象卫星风云一号展区", 
+                "返回式卫星尖兵一号展区", 
+                "电子侦察卫星长空一号展区", 
+                "中国探月工程展区", 
+                "高分专项工程展区",
+                "中国载人航天工程展区", 
+                "载人飞船神舟五号展区", 
+                "航天员展区", 
+                "深空探测展区"
                 ],
             Current_Order_of_Visit:List[str]=[               # robot当前任务列表，完成一个就pop一个
-                "火箭展厅", 
-                "卫星展厅", 
-                "航天器展厅", 
-                "运载火箭展厅"
+                "东方红一号展区", 
+                "孙家栋院士成就展区", 
+                "中国航天工程成就展区", 
+                "中国人造地球卫星展区", 
+                "气象卫星风云四号展区", 
+                "北斗导航卫星展区", 
+                "科学实验卫星墨子号展区", 
+                "气象卫星风云一号展区", 
+                "返回式卫星尖兵一号展区", 
+                "电子侦察卫星长空一号展区", 
+                "中国探月工程展区", 
+                "高分专项工程展区",
+                "中国载人航天工程展区", 
+                "载人飞船神舟五号展区", 
+                "航天员展区", 
+                "深空探测展区"
                 ],
             Mask:List[bool] = [False] * 4,                                 # 到过的地方就标记
             Onehot:List[bool] = [False] * 4,                               # 现在位于哪里

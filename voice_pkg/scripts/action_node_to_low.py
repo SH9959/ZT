@@ -4,7 +4,8 @@
 import rospy
 import random
 from std_msgs.msg import String
-from robot_service.srv import RobotArmService, RobotArmServiceRequest
+
+from harbin_pkg.srv import doAction # 下位机动作服务
 
 class RobotArmMotionNode(object):
     def __init__(self):
@@ -15,7 +16,8 @@ class RobotArmMotionNode(object):
         self.should_send_commands = False
 
         # 创建服务客户端，用于发送指令给机器人硬件
-        self.service_client = rospy.ServiceProxy('robot_arm_service', RobotArmService)
+        arm_service = rospy.wait_for_service("/doAction") # 等待与下位机通信的服务变得可用
+        self.service_client = rospy.ServiceProxy('/doAction', doAction)
 
         # 订阅主题
         rospy.Subscriber('arm_chatter', String, self.command_callback)
@@ -33,11 +35,8 @@ class RobotArmMotionNode(object):
         else:
             rospy.loginfo("发送指定动作: %d", msg.data)
             try:
-                # 准备服务请求
-                request = RobotArmServiceRequest()
-                request.command = msg.data
-                # 调用服务，阻塞直到服务返回
-                response = self.service_client(request)
+                # 向服务发送请求，阻塞，直至到达目标点才会返回
+                response = self.service_client(action_code=msg.data)
                 if response.success:
                     rospy.loginfo("动作执行成功")
                 else:
@@ -51,11 +50,8 @@ class RobotArmMotionNode(object):
             random_number = random.randint(1, 10)
             rospy.loginfo("发送随机数字: %d", random_number)
             try:
-                # 准备服务请求
-                request = RobotArmServiceRequest()
-                request.command = random_number
-                # 调用服务，阻塞直到服务返回
-                response = self.service_client(request)
+                # 向服务发送请求，阻塞，直至到达目标点才会返回
+                response = self.service_client(action_code=random_number)
                 if response.success:
                     rospy.loginfo("动作执行成功")
                 else:

@@ -59,6 +59,7 @@ flagover = False  # 提示音是否已经读完
 micover = False  # False: 还没录音完 True 录音结束
 iatover = False  # False: 每次识别结束都会改为True
 text = ''
+card_ = 0  # 声卡
 
 now = None
 environment = 'default'
@@ -162,9 +163,9 @@ def kedaxunfei_iat_service(savepath):
             intervel = 0.04  # 发送音频间隔(单位:s)
             status = STATUS_FIRST_FRAME  # 音频的状态信息，标识音频是第一帧，还是中间帧、最后一帧
 
-            sound = AudioSegment.from_file(wsParam.AudioFile, "wav") #加载WAV文件
-            sound = sound.apply_gain(20)
-            sound.export(wsParam.AudioFile, format="wav")
+            # sound = AudioSegment.from_file(wsParam.AudioFile, "wav") #加载WAV文件
+            # sound = sound.apply_gain(20)
+            # sound.export(wsParam.AudioFile, format="wav")
             with open(wsParam.AudioFile, "rb") as fp:
                 print('start audio')
                 while True:
@@ -293,7 +294,10 @@ def tencentcloud_iat(savepath):
         print(err)
 
 def run_prompt_audio(filename):
+    global card_
     play(AudioSegment.from_mp3(filename))
+    cmd = f"aplay -D plughw:{card_},0 {filename}"
+    exit_status = os.system(cmd)
     global flagover
     flagover = True
 
@@ -361,7 +365,6 @@ def get_mic(savepath):
 import wave
 import pyaudio
 import numpy as np
-import h5py
 import subprocess
 
 def get_mic_from_audio(savepath):
@@ -376,8 +379,8 @@ def get_mic_from_audio(savepath):
     # 定义音频录制的参数
     FORMAT = pyaudio.paInt16  # 数据格式
     CHANNELS = 1  # 通道数，这里假设你有6个麦克风
-    RATE = 16000  # 采样率
-    CHUNK = 3000  # 每次读取的数据块大小
+    RATE = 48000  # 采样率
+    CHUNK = 4000  # 每次读取的数据块大小
     RECORD_SECONDS = DURATION  # 录制时间
     # 初始化PyAudio
     p = pyaudio.PyAudio()
@@ -388,7 +391,7 @@ def get_mic_from_audio(savepath):
                     rate=RATE,
                     input=True,
                     frames_per_buffer=CHUNK,
-                    # input_device_index=5
+                    # input_device_index=6
                     )
 
     print("Recording...")
@@ -412,6 +415,11 @@ def get_mic_from_audio(savepath):
             step = 0
     
     print("录音结束。")
+
+    # 停止和关闭流
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
     
     # Save the recorded data as a WAV file
     wf = wave.open(savepath, 'wb')
@@ -421,13 +429,18 @@ def get_mic_from_audio(savepath):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-    # subprocess.run(['ffmpeg','-i',savepath,'-af','pan=6c|c0=2*c0|c1=0.1*c1|c2=0.1*c2|c3=0.1*c3|c4=0.1*c4|c5=0.1*c5', '-y', savepath])
-
+    # subprocess.run(['ffmpeg','-i', savepath,'-ac','pan=6c|c0=2*c0|c1=0.1*c1|c2=0.1*c2|c3=0.1*c3|c4=0.1*c4|c5=0.1*c5', '-y', savepath])
+    
+    # 修改为16k
+    savepath_new = savepath.replace(".wav", "16k.wav")
+    cmd = " ".join(['ffmpeg','-i', savepath,'-ar','16000', '-y', savepath_new])
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    code = process.wait()
     # subprocess.run(['ffmpeg','-i',savepath,'-ac','1', '-y', savepath])
 
     micover = True
 
-    kedaxunfei_iat_service(savepath)
+    kedaxunfei_iat_service(savepath_new)
 
 
 # def mic_iat(savepath):
@@ -481,7 +494,7 @@ def get_mic_from_audio(savepath):
     
 #     kedaxunfei_iat_service(savepath)
   
-def iat_web_api(input, iter=1, environment_name='default'):
+def iat_web_api(input, iter=1, environment_name='default', card=2):
     # 测试时候在此处正确填写相关信息即可运行
     global micover
     global iatover
@@ -489,15 +502,17 @@ def iat_web_api(input, iter=1, environment_name='default'):
     global environment
 
     # 重置全局变量
+    global card_
+    card_ = card
     text = ''
     micover = False
     iatover = False
     environment = environment_name
 
     if input == 'zai':
-        filename = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/iamhere.mp3'
+        filename = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/iamhere.wav'
     else:
-        filename = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/ding_cut.mp3'
+        filename = '/home/kuavo/catkin_dt/src/voice_pkg/temp_record/ding_cut.wav'
     thread.start_new_thread(run_prompt_audio, (filename,))
 
     for i in range(iter):
@@ -532,12 +547,12 @@ if __name__ == "__main__":
       1. iter  每次  两秒  
       2. 只有一开始会有 叮 或 我在
     '''
-    flagover = True
-    for i in range(10):
-      input()
-      savepath = f'/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic2tree_{i}.wav'
-      get_mic_from_audio(savepath)
-    # res = iat_web_api(input='zai', iter=10)
+    # flagover = True
+    # for i in range(10):
+    #   input()
+    #   savepath = f'/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic2tree_{i}.wav'
+    #   get_mic_from_audio(savepath)
+    res = iat_web_api(input='zai', iter=1, card=0)
     # print('res = ', res)
     # # flagover = True
-    # kedaxunfei_iat_service(savepath='/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic_new_new_new_takeoff1_0.wav')
+    # kedaxunfei_iat_service(savepath='/home/kuavo/catkin_dt/src/voice_pkg/temp_record/mic_z_0_16000.wav')

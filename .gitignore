@@ -7,3 +7,5 @@ __pycache__/
 config.json
 checkpoints/
 interrupt_old/
+ddynamic_reconfigure-kinetic-devel/
+realsense-ros-ros1-legacy/

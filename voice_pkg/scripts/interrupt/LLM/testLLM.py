@@ -38,7 +38,6 @@ from langchain.document_loaders import UnstructuredFileLoader
 import yaml
 
 from .testgpt4 import gpt
-from ..utils import read_yaml_from_parent
 
 class OpenAiBuilder:
     username = None
@@ -91,7 +90,7 @@ def construct_konwladge_base():
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
     
     # 文档 1
-    loader = UnstructuredFileLoader("/home/kuavo/catkin_zt/src/ros2_zt/ros2_zt/txt/航天馆展品介绍.txt")
+    loader = UnstructuredFileLoader("/home/kuavo/catkin_dt/src/voice_pkg/scripts/interrupt/LLM/txt/航天馆展品介绍.txt")
     data = loader.load()
 
     # 文本切分
@@ -104,7 +103,7 @@ def construct_konwladge_base():
     db1 = Chroma.from_documents(texts, embeddings, persist_directory="./chroma/news_test1")
 
     # 文档 2
-    loader = UnstructuredFileLoader("/home/kuavo/catkin_zt/src/ros2_zt/ros2_zt/txt/航天馆中文讲稿.txt")
+    loader = UnstructuredFileLoader("/home/kuavo/catkin_dt/src/voice_pkg/scripts/interrupt/LLM/txt/航天馆中文讲稿.txt")
     data = loader.load()
 
     # 文本切分

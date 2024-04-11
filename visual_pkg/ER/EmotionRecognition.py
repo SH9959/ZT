@@ -1,3 +1,6 @@
+# ================
+# Author: hsong
+# ================
 from deepface import DeepFace
 import face_recognition
 
@@ -488,35 +491,46 @@ def run_1(img_path:Union[str,np.ndarray]="2.jpg", SEARCH_THRES:Optional[float]=N
   cv2.imwrite(SAVE_PATH,frame)
 
 '''
+DEPTH_NEED = False
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 class RealsenseImage():
     def __init__(self) -> None:
         #rospy.init_node('ER_publisher', anonymous=True)
         self.color_frame_sub = rospy.Subscriber('/camera/color/image_raw', Image, self.color_callback)
-        self.depth_frame_sub = rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_callback)
+        if DEPTH_NEED:
+          self.depth_frame_sub = rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_callback)
+          self.depth = np.empty([480,640], dtype = np.float64)
         self.color = np.empty([480,640,3], dtype = np.uint8)
-        self.depth = np.empty([480,640], dtype = np.float64)
-
         self.bridge = CvBridge()
 
     def color_callback(self, data):  
         self.color = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
     def depth_callback(self, data):
-        self.depth = self.bridge.imgmsg_to_cv2(data, "16UC1")
+        if DEPTH_NEED:
+          self.depth = self.bridge.imgmsg_to_cv2(data, "16UC1")
+        pass
     
     def getImage(self):
-      while not self.depth.any() or not self.color.any():
-        # 如果都是空的，也就是一张图片都还没来，就循环等待相机开启
-        # print('waiting')
-        if rospy.is_shutdown():
-          break
-      return self.color, self.depth
+      if DEPTH_NEED:
+        while not self.depth.any() or not self.color.any():
+          # 如果都是空的，也就是一张图片都还没来，就循环等待相机开启
+          # print('waiting')
+          if rospy.is_shutdown():
+            break
+        return self.color, self.depth
+      else:
+        while  not self.color.any():
+          # 如果都是空的，也就是一张图片都还没来，就循环等待相机开启
+          # print('waiting')
+          if rospy.is_shutdown():
+            break
+
+        return self.color
 
 def run_2():  # 流式实时可视化， 和run_1相似
   image_from_ros = RealsenseImage()
-   
   VAR_THRES = 2.8       # 唇动检测的方差阈值
   MU_THRES = 5.0        # 唇动检测的均值阈值
   SEARCH_THRES = 0.35   # 在数据库中查找人脸的相似度阈值，越小越高
@@ -527,7 +541,7 @@ def run_2():  # 流式实时可视化， 和run_1相似
   global SEND_MODE      # 收到ros主控代码时 发送 信号
   global RUN2           # 为True表示本节点一直运行，False表示只有接收到ROS主控代码时才运行，用前者。
 
-  RS=False               # RealSense相机
+  RS=False              # RealSense相机
   CV2=False            # cv2相机
   ROS=True             # ROS
   LIP_MODE = False      #是否需要检测唇动以跳过人脸检测
@@ -600,7 +614,12 @@ def run_2():  # 流式实时可视化， 和run_1相似
         if not color_frame:
             continue
       if ROS:
-        color_image, depth_image = image_from_ros.getImage()
+        # print("DEBUG 31")
+        if DEPTH_NEED:
+          color_image, depth_image = image_from_ros.getImage()
+        else:
+          color_image = image_from_ros.getImage() 
+        # print("DEBUG 3")
         
         # # Convert images to numpy arrays
         # if Depth:
@@ -623,7 +642,7 @@ def run_2():  # 流式实时可视化， 和run_1相似
             
         frame = color_image
 
-      
+      # print("DEBUG 4")
       # NEED_FACE_DETECT = True
       # cv2.imwrite('wmj.jpg',frame)
       if LIP_MODE:
@@ -683,8 +702,9 @@ def run_2():  # 流式实时可视化， 和run_1相似
       frame_np = np.array(frame)
       height, width = frame.shape[:2]
       S = height * width
+      #print("DEBUG:1")
       persons_bounding_boxs = tmp.get_faces(img_path=frame_np)
-      
+      #print("DEBUG:2")
       if len(persons_bounding_boxs) > 0 :  # 有人脸
         if SEND_MODE:
           faces_num = len(persons_bounding_boxs)
@@ -828,6 +848,20 @@ def run_2():  # 流式实时可视化， 和run_1相似
 if __name__=="__main__":
   # Configure depth and color streams\
   # run_1(SEARCH_THRES=0.3)
+  # import argparse
+  # import os
+ 
+  #   # parse args
+  # parser = argparse.ArgumentParser(description='test')
+  # parser.add_argument('-d', '--debug', action='store_true', help='debug mode')
+  # args, _ = parser.parse_known_args()
+  # if args.debug:
+  #     # if you use vscode on hpc-login-01
+  #     import debugpy
+  #     debugpy.connect(('192.168.50.202', 5901))
+  #     debugpy.wait_for_client()
+  #     debugpy.breakpoint()
+
   run_2()
      
 

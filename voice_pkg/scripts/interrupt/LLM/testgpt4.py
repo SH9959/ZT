@@ -9,8 +9,6 @@ import yaml
 import json
 from openai import OpenAI
 
-from ..utils import read_yaml_from_parent
-
 # Example of an OpenAI ChatCompletion request
 # https://platform.openai.com/docs/guides/text-generation/chat-completions-api
 

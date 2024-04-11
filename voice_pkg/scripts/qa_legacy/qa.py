@@ -40,7 +40,7 @@ embedding_path = os.path.join("/home/kuavo/catkin_dt/src/voice_pkg/scripts/qa_le
 doc_e, key_e = 'doc_emb', 'key_emb'  # npz的keys名
 
 # 模型路径
-bge_ckptpath = os.path.join("/home/kuavo/catkin_dt/src/voice_pkg/scripts/qa_legacy/model")
+bge_ckptpath = "BAAI/bge-small-zh-v1.5"
 
 # 使用本地下载的模型初始化KeyBERT模型
 # keybertpath = os.path.join("/home/kuavo/catkin_dt/src/voice_pkg/scripts/qa_legacy/paraphrase-multilingual-MiniLM-L12-v2")
@@ -175,8 +175,9 @@ class SyntaxExtractor:
 
 # 加载bge模型
 print("加载bge模型 ...")
-tokenizer = AutoTokenizer.from_pretrained(bge_ckptpath)
-model = AutoModel.from_pretrained(bge_ckptpath)
+ppp = "catkin_dt/src/checkpoints/bge_small_zh_v1.5/models--BAAI--bge-small-zh-v1.5/snapshots/7999e1d3359715c523056ef9478215996d62a620"
+tokenizer = AutoTokenizer.from_pretrained(ppp)#, cache_dir='/home/kuavo/catkin_dt/src/checkpoints/bge_small_zh_v1.5')
+model = AutoModel.from_pretrained(ppp)#, cache_dir="/home/kuavo/catkin_dt/src/checkpoints/bge_small_zh_v1.5")
 
 # 加载文本的embedding
 doc_emb_key_emb = np.load(embedding_path)

@@ -42,6 +42,8 @@ def get_llm_answer(model='huozi'):
         doc_qa_class = DocumentQAHuoZi
     elif model == 'gpt-4':
         doc_qa_class = DocumentQAGPT4
+    else:
+        assert("Model Not Support.")
 
     # doc_qa_class.process_query("介绍一下北斗卫星")
     return doc_qa_class
