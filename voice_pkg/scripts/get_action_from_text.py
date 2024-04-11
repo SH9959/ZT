@@ -1,3 +1,7 @@
+# ===================================
+# Author: hsong
+# 小模型，给定文本，输出匹配的预定义动作
+# ===================================
 from sentence_transformers import SentenceTransformer
 import time
 import numpy as np
@@ -52,9 +56,6 @@ def get_action_from(txt:str, _model:object=_model):
         print(" ")
         return None
 
-
-
-
 if __name__=="__main__":
 
     txt = [
@@ -79,7 +80,7 @@ if __name__=="__main__":
         print(f"TIME: {b-a} s")
         
         #action = get_action_from("你好")
-        """actions:
+        """actions labels:
         ['招手',
         '介绍自己',
         '介绍正右方',
@@ -88,5 +89,12 @@ if __name__=="__main__":
         '介绍较远的前方',
         '回忆 刚刚我们',
         '复杂的讲解动作',
-        '结束POSE']
+        '讲解结束 合影 介绍完毕 姿势']
         """
+        
+        
+        
+    """调用示例
+    from get_action_from_text import get_action_from
+    action，id = get_action_from(txt = "你好")
+    """

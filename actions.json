@@ -17,7 +17,7 @@
     },
     {
         "id":3,
-        "action_name":"介绍正右方", 
+        "action_name":"介绍右方", 
         "action_time":19,
         "action_description":["右手伸掌居中", "左手也抬起，居中", "右手再向上摊开", "之后左手也摊开", "保持两手摊开情况下，反复松手握拳"],
         "action_scene_hsong":"介绍动作：当需要介绍右边的展品时，先指向右边，再摊开双手进行讲解",
@@ -25,7 +25,7 @@
     },
     {
         "id":4,
-        "action_name":"介绍右方", 
+        "action_name":"介绍右下方", 
         "action_time":9,
         "action_description":["右下指靠前的位置", "右下指靠后的位置"],
         "action_scene_hsong":"介绍动作：当需要介绍右下方的展品时，手会指向右下方，进行讲解",
@@ -65,7 +65,7 @@
     },   
     {
         "id":9,
-        "action_name":"讲解结束 合影 介绍完毕", 
+        "action_name":"讲解结束 合影 介绍完毕 姿势", 
         "action_time":15,
         "action_description":["右手居中", "摆POSE"],
         "action_scene_hsong":"当讲解结束时，机器人可以摆POSE，也可以用于合影。",

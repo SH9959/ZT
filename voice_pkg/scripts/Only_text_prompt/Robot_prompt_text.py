@@ -1,3 +1,8 @@
+# =====================================
+# Author: lhkong
+# Quote: Used by hsong
+# 大模型，给定文本，输出匹配的预定义的动作
+# =====================================
 import openai
 import re
 import argparse
@@ -22,6 +27,8 @@ openai.api_base = "https://api.xty.app/v1"  # 加速路径
 
 with open(args.sysprompt, "r", encoding='utf-8') as f:
     sysprompt = f.read()
+with open(args.prompt, "r", encoding='utf-8') as f:
+    prompt = f.read()
 
 chat_history = [
     {
@@ -43,11 +50,11 @@ chat_history = [
 ]
 
 
-def ask(prompt):
+def ask(query):
     chat_history.append(
         {
             "role": "user",
-            "content": prompt,
+            "content": prompt + '\n现在输入：' + query,
         }
     )
     completion = openai.ChatCompletion.create(
@@ -64,9 +71,9 @@ def ask(prompt):
     return chat_history[-1]["content"]
 
 
-print(f"Done.")
+# print(f"Done.")
 
-code_block_regex = re.compile(r"```(.*?)```", re.DOTALL)
+# code_block_regex = re.compile(r"```(.*?)```", re.DOTALL)
 
 # 找到用3个反引号包含的python代码块
 def extract_python_code(content):
@@ -83,28 +90,32 @@ def extract_python_code(content):
 
 # 此处为初始化机器人或仿真环境的代码
 
-with open(args.prompt, "r", encoding='utf-8') as f:
-    prompt = f.read()
 
-ask(prompt)
-print("欢迎使用航天馆导览机器人！我随时为您提供关于机器人指令的帮助。")
+# print("欢迎使用航天馆导览机器人！我随时为您提供关于机器人指令的帮助。")
 
-while True:
-    question = input("Robot> ")
+# while True:
+#     question = input("Robot> ")
 
-    if question == "退出":
-        break
+#     if question == "退出":
+#         break
 
-    if question == "清空":
-        os.system("cls")
-        continue
+#     if question == "清空":
+#         os.system("cls")
+#         continue
 
-    response = ask(question)
+#     response = ask(question)
 
-    print(f"\n{response}\n")
+#     print(f"\n{response}\n")
 
-    code = extract_python_code(response)
-    if code is not None:
-        print("我正在运行命令，请等待……")
-        exec(extract_python_code(response))    # 这是执行项
-        print("完成！\n")
+#     code = extract_python_code(response)
+#     if code is not None:
+#         print("我正在运行命令，请等待……")
+#         exec(extract_python_code(response))    # 这是执行项
+#         print("完成！\n")
+
+
+"""调用示例
+from Only_text_prompt import ask
+response = ask(question)
+action, id = response.split(":")[1], response.split(":")[0]
+"""
